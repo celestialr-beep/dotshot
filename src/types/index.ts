@@ -1,12 +1,49 @@
 export type UserRole =
+  // Photo & Video
   | 'photographer'
   | 'videographer'
+  | 'retoucher'
+  | 'editor'
+  // Beauty
   | 'makeup_artist'
   | 'hairstylist'
-  | 'model'
-  | 'art_director'
+  | 'nail_artist'
+  | 'esthetician'
+  // Fashion & Styling
   | 'stylist'
-  | 'retoucher'
+  | 'costume_designer'
+  | 'wardrobe_assistant'
+  // Performance
+  | 'model'
+  | 'actor'
+  | 'dancer'
+  | 'choreographer'
+  | 'comedian'
+  | 'host_emcee'
+  | 'stunt_performer'
+  // Music
+  | 'musician'
+  | 'singer'
+  | 'dj'
+  | 'music_producer'
+  | 'sound_engineer'
+  // Writing & Direction
+  | 'writer'
+  | 'scriptwriter'
+  | 'creative_director'
+  | 'art_director'
+  | 'director'
+  // Production & Design
+  | 'set_designer'
+  | 'prop_stylist'
+  | 'florist'
+  | 'lighting_designer'
+  | 'production_assistant'
+  // Events & Strategy
+  | 'event_planner'
+  | 'brand_strategist'
+  | 'social_media_manager'
+  // Other
   | 'other'
 
 export interface Profile {

@@ -25,6 +25,10 @@ const roles = [
   { icon: Video, label: 'Videographers', count: '840+' },
   { icon: Sparkles, label: 'Makeup Artists', count: '2.1K+' },
   { icon: Scissors, label: 'Hairstylists', count: '1.7K+' },
+  { icon: Users, label: 'Models & Talent', count: '980+' },
+  { icon: Star, label: 'Musicians & DJs', count: '620+' },
+  { icon: Globe, label: 'Writers & Directors', count: '530+' },
+  { icon: Trophy, label: 'Dancers & Performers', count: '750+' },
 ]
 
 const features = [
@@ -157,9 +161,9 @@ export default function HomePage() {
           </h1>
 
           <p className="text-lg sm:text-xl text-text-muted max-w-2xl mx-auto mb-10 leading-relaxed">
-            Photographers, videographers, makeup artists, and hairstylists — come together
-            for free collabs or paid campaigns. Cut production costs. Build your network.
-            Get your work seen worldwide.
+            Photographers, videographers, musicians, dancers, DJs, writers, makeup artists,
+            directors, hosts, and every creative in between — come together for free collabs
+            or paid campaigns. Cut production costs. Build your network. Get your work seen worldwide.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">

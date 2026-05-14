@@ -7,11 +7,9 @@ import { Mail, Lock, User, MapPin, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { DotshotLogo } from '@/components/ui/DotshotLogo'
-import { ROLE_LABELS } from '@/lib/utils'
+import { ROLE_GROUPS, ROLE_LABELS } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import type { UserRole } from '@/types'
-
-const roles = Object.entries(ROLE_LABELS) as [UserRole, string][]
 
 export default function SignupPage() {
   const router = useRouter()
@@ -138,10 +136,14 @@ export default function SignupPage() {
                       onChange={(e) => setRole(e.target.value as UserRole)}
                       className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-sm text-text appearance-none focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/30 transition-colors"
                     >
-                      {roles.map(([value, label]) => (
-                        <option key={value} value={value} className="bg-surface">
-                          {label}
-                        </option>
+                      {ROLE_GROUPS.map((group) => (
+                        <optgroup key={group.label} label={group.label}>
+                          {group.roles.map((r) => (
+                            <option key={r} value={r} className="bg-surface">
+                              {ROLE_LABELS[r]}
+                            </option>
+                          ))}
+                        </optgroup>
                       ))}
                     </select>
                     <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-faint pointer-events-none" />

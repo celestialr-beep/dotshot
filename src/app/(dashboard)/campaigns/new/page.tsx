@@ -8,10 +8,8 @@ import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import { ROLE_LABELS } from '@/lib/utils'
+import { ROLE_GROUPS, ROLE_LABELS } from '@/lib/utils'
 import type { UserRole } from '@/types'
-
-const roleOptions = Object.entries(ROLE_LABELS) as [UserRole, string][]
 
 export default function NewCampaignPage() {
   const router = useRouter()
@@ -190,20 +188,27 @@ export default function NewCampaignPage() {
         <div className="bg-surface border border-border rounded-xl p-5 space-y-4">
           <h2 className="font-semibold flex items-center gap-2"><Users size={16} className="text-gold" /> Roles Needed</h2>
           <p className="text-xs text-text-faint">Select all roles you need for this campaign.</p>
-          <div className="flex flex-wrap gap-2">
-            {roleOptions.map(([value, label]) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => toggleRole(value)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                  selectedRoles.includes(value)
-                    ? 'bg-gold/15 border-gold/40 text-gold'
-                    : 'bg-surface border-border text-text-muted hover:border-border-light'
-                }`}
-              >
-                {label}
-              </button>
+          <div className="space-y-3">
+            {ROLE_GROUPS.map((group) => (
+              <div key={group.label}>
+                <p className="text-xs text-text-faint font-semibold uppercase tracking-wider mb-2">{group.label}</p>
+                <div className="flex flex-wrap gap-2">
+                  {group.roles.map((value) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => toggleRole(value)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                        selectedRoles.includes(value)
+                          ? 'bg-gold/15 border-gold/40 text-gold'
+                          : 'bg-surface border-border text-text-muted hover:border-border-light'
+                      }`}
+                    >
+                      {ROLE_LABELS[value]}
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
