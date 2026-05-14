@@ -223,7 +223,7 @@ export default function MarketplacePage() {
           ['all', 'All Listings', null],
           ['sell', 'For Sale', Tag],
           ['trade', 'Trade', RefreshCw],
-          ['free', 'Free to a Good Home', ShoppingBag],
+          ['free', 'Pass It Forward', ShoppingBag],
         ] as const).map(([val, label, Icon]) => (
           <button
             key={val}
@@ -278,7 +278,7 @@ export default function MarketplacePage() {
       <div className="flex flex-wrap items-center gap-4 mb-5 text-sm text-text-muted">
         <span>{filtered.length} listings</span>
         <span>·</span>
-        <span className="text-green-400">{mockListings.filter(l => l.type === 'free').length} free to a good home</span>
+        <span className="text-green-400">{mockListings.filter(l => l.type === 'free').length} pass it forward</span>
         <span>·</span>
         <span className="text-purple-400">{mockListings.filter(l => l.type === 'trade').length} trade offers</span>
       </div>

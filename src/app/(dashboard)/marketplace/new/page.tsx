@@ -140,7 +140,7 @@ export default function NewListingPage() {
                     : 'bg-surface border-border text-text-muted hover:border-border-light'
                 }`}
               >
-                {type === 'sell' ? 'Sell' : type === 'trade' ? 'Trade' : 'Free to a Good Home'}
+                {type === 'sell' ? 'Sell' : type === 'trade' ? 'Trade' : 'Pass It Forward'}
               </button>
             ))}
           </div>

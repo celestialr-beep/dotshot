@@ -14,6 +14,7 @@ import {
   LogOut,
   ShoppingBag,
   Shield,
+  FileText,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { DotshotLogo } from '@/components/ui/DotshotLogo'
@@ -28,6 +29,7 @@ const navItems = [
   { href: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
   { href: '/messages', icon: Users, label: 'Messages' },
   { href: '/safety', icon: Shield, label: 'Gig Safety' },
+  { href: '/agreement', icon: FileText, label: 'Agreements' },
 ]
 
 export function DashboardNav() {
