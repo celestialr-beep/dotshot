@@ -1,35 +1,60 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import { Bell, TrendingUp, Calendar, Star, Briefcase, MessageSquare, Users } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
+
+function getGreeting() {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Good morning'
+  if (hour < 17) return 'Good afternoon'
+  return 'Good evening'
+}
 
 const recentActivity = [
   { type: 'campaign', text: 'New campaign posted near you', time: '2h ago', icon: Briefcase },
-  { type: 'collab', text: 'Sofia M. responded to your collab post', time: '4h ago', icon: Users },
-  { type: 'review', text: 'You received a 5-star review from Marcus P.', time: '1d ago', icon: Star },
-  { type: 'message', text: '3 new messages from your network', time: '1d ago', icon: MessageSquare },
-]
-
-const quickStats = [
-  { label: 'Profile Views', value: '142', change: '+12%', up: true },
-  { label: 'Collab Posts', value: '3', change: 'this month', up: null },
-  { label: 'Campaign Apps', value: '5', change: '2 pending', up: null },
-  { label: 'Network Size', value: '47', change: '+8 this week', up: true },
+  { type: 'collab', text: 'Check the forum for new collab requests', time: '4h ago', icon: Users },
+  { type: 'review', text: 'Complete your profile to get discovered', time: 'Now', icon: Star },
+  { type: 'message', text: 'Welcome to Dotshot! Browse open campaigns', time: 'Just now', icon: MessageSquare },
 ]
 
 export default function DashboardPage() {
+  const [firstName, setFirstName] = useState('')
+  const [tier, setTier] = useState('free')
+
+  useEffect(() => {
+    async function loadUser() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name, subscription_tier')
+        .eq('id', user.id)
+        .single()
+      if (data) {
+        setFirstName(data.full_name.split(' ')[0])
+        setTier(data.subscription_tier || 'free')
+      }
+    }
+    loadUser()
+  }, [])
+
   return (
     <div className="p-6 max-w-5xl mx-auto">
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold mb-1">Good morning 👋</h1>
+          <h1 className="text-2xl font-bold mb-1">
+            {getGreeting()}{firstName ? `, ${firstName}` : ''} 👋
+          </h1>
           <p className="text-text-muted text-sm">Here&apos;s what&apos;s happening with your Dotshot account.</p>
         </div>
         <div className="flex items-center gap-3">
           <button className="relative p-2 rounded-lg bg-surface border border-border text-text-muted hover:text-text transition-colors">
             <Bell size={18} />
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-gold rounded-full text-dark text-xs flex items-center justify-center font-bold">3</span>
           </button>
           <Link href="/campaigns">
             <Button size="sm">Find Campaigns</Button>
@@ -37,24 +62,28 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {quickStats.map(({ label, value, change, up }) => (
-          <div key={label} className="bg-surface border border-border rounded-xl p-4">
-            <div className="text-2xl font-bold mb-1">{value}</div>
-            <div className="text-xs text-text-muted mb-1">{label}</div>
-            <div className={`text-xs font-medium ${up === true ? 'text-green-400' : up === false ? 'text-red-400' : 'text-text-faint'}`}>
-              {change}
-            </div>
-          </div>
-        ))}
+      {/* Welcome card for new users */}
+      <div className="bg-gold/5 border border-gold/20 rounded-xl p-5 mb-8">
+        <h2 className="font-semibold mb-1">Welcome to Dotshot! 🎯</h2>
+        <p className="text-sm text-text-muted mb-3">You&apos;re in. Here&apos;s how to get started:</p>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/forum">
+            <Button size="sm" variant="outline">Post a Collab Request</Button>
+          </Link>
+          <Link href="/campaigns">
+            <Button size="sm" variant="outline">Browse Campaigns</Button>
+          </Link>
+          <Link href="/marketplace">
+            <Button size="sm" variant="outline">Visit Marketplace</Button>
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Activity feed */}
         <div className="lg:col-span-2 bg-surface border border-border rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Recent Activity</h2>
+            <h2 className="font-semibold">Activity</h2>
             <TrendingUp size={16} className="text-text-muted" />
           </div>
           <div className="flex flex-col gap-3">
@@ -98,17 +127,18 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Upgrade CTA */}
-          <div className="bg-gold/5 border border-gold/30 rounded-xl p-5">
-            <Badge variant="gold" className="mb-3 text-xs">Pro Plan</Badge>
-            <h3 className="font-semibold mb-2">Unlock paid campaigns</h3>
-            <p className="text-xs text-text-muted mb-3 leading-relaxed">
-              Upgrade to Pro to apply for paid Crown & Capture sessions and get priority placement.
-            </p>
-            <Button size="sm" className="w-full">Upgrade — $6.99/mo</Button>
-          </div>
+          {/* Upgrade CTA — only show for free users */}
+          {tier === 'free' && (
+            <div className="bg-gold/5 border border-gold/30 rounded-xl p-5">
+              <Badge variant="gold" className="mb-3 text-xs">Upgrade</Badge>
+              <h3 className="font-semibold mb-2">Unlock paid campaigns</h3>
+              <p className="text-xs text-text-muted mb-3 leading-relaxed">
+                Upgrade to Pro to apply for paid Crown &amp; Capture sessions and get priority placement.
+              </p>
+              <Button size="sm" className="w-full">Upgrade — $6.99/mo</Button>
+            </div>
+          )}
 
-          {/* Upcoming */}
           <div className="bg-surface border border-border rounded-xl p-5">
             <div className="flex items-center gap-2 mb-3">
               <Calendar size={16} className="text-gold" />

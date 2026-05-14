@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import {
   LayoutDashboard,
   Users,
@@ -15,6 +16,8 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { DotshotLogo } from '@/components/ui/DotshotLogo'
+import { supabase } from '@/lib/supabase'
+import { Avatar } from '@/components/ui/Avatar'
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -27,6 +30,27 @@ const navItems = [
 
 export function DashboardNav() {
   const pathname = usePathname()
+  const router = useRouter()
+  const [profile, setProfile] = useState<{ full_name: string; username: string; avatar_url: string | null } | null>(null)
+
+  useEffect(() => {
+    async function loadProfile() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name, username, avatar_url')
+        .eq('id', user.id)
+        .single()
+      if (data) setProfile(data)
+    }
+    loadProfile()
+  }, [])
+
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+    router.push('/')
+  }
 
   return (
     <aside className="hidden lg:flex flex-col w-60 min-h-screen bg-surface border-r border-border fixed left-0 top-0 z-40">
@@ -59,8 +83,19 @@ export function DashboardNav() {
 
       {/* Bottom */}
       <div className="p-4 border-t border-border flex flex-col gap-1">
+        {/* User info */}
+        {profile && (
+          <div className="flex items-center gap-3 px-3 py-2.5 mb-1">
+            <Avatar name={profile.full_name} src={profile.avatar_url} size="sm" />
+            <div className="min-w-0">
+              <p className="text-xs font-semibold text-text truncate">{profile.full_name}</p>
+              <p className="text-xs text-text-faint truncate">@{profile.username}</p>
+            </div>
+          </div>
+        )}
+
         <Link
-          href="/profile/me"
+          href={profile ? `/profile/${profile.username}` : '/profile/me'}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-text-muted hover:text-text hover:bg-surface-2 transition-all"
         >
           <User size={18} />
@@ -73,7 +108,10 @@ export function DashboardNav() {
           <Settings size={18} />
           Settings
         </Link>
-        <button className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-text-muted hover:text-error hover:bg-error/10 transition-all text-left w-full">
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-text-muted hover:text-red-400 hover:bg-red-400/10 transition-all text-left w-full"
+        >
           <LogOut size={18} />
           Sign Out
         </button>
