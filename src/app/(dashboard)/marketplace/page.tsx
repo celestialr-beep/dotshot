@@ -9,6 +9,7 @@ import { Avatar } from '@/components/ui/Avatar'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { formatCurrency, timeAgo } from '@/lib/utils'
+import Link from 'next/link'
 
 type ListingType = 'sell' | 'trade' | 'free'
 type Condition = 'new' | 'like_new' | 'good' | 'fair'
@@ -196,10 +197,12 @@ export default function MarketplacePage() {
             florals, décor, and more. Everything here has value. Nothing here is junk.
           </p>
         </div>
-        <Button className="flex-shrink-0">
-          <Plus size={16} />
-          List an Item
-        </Button>
+        <Link href="/marketplace/new">
+          <Button className="flex-shrink-0">
+            <Plus size={16} />
+            List an Item
+          </Button>
+        </Link>
       </div>
 
       {/* Community standard banner */}

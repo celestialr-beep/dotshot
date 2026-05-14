@@ -110,7 +110,9 @@ export default function CampaignsPage() {
             {mockCampaigns.filter(c => c.status === 'open').length} Open
           </Badge>
           <Link href="/campaigns/post">
-            <Button size="sm" variant="outline">Post a Campaign</Button>
+            <Link href="/campaigns/new">
+              <Button size="sm" variant="outline">Post a Campaign</Button>
+            </Link>
           </Link>
         </div>
       </div>
