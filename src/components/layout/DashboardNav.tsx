@@ -13,6 +13,7 @@ import {
   Settings,
   LogOut,
   ShoppingBag,
+  Shield,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { DotshotLogo } from '@/components/ui/DotshotLogo'
@@ -26,6 +27,7 @@ const navItems = [
   { href: '/network', icon: Network, label: 'Network' },
   { href: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
   { href: '/messages', icon: Users, label: 'Messages' },
+  { href: '/safety', icon: Shield, label: 'Gig Safety' },
 ]
 
 export function DashboardNav() {
