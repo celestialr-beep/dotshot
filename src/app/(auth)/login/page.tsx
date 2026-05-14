@@ -2,22 +2,44 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Mail, Lock, Zap } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Mail, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { DotshotLogo } from '@/components/ui/DotshotLogo'
+import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
     setError('')
-    // TODO: wire up Supabase auth
-    await new Promise((r) => setTimeout(r, 1000))
-    setLoading(false)
-    setError('Coming soon — Supabase auth will be connected here.')
+
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (authError) {
+      setError(authError.message)
+      setLoading(false)
+      return
+    }
+
+    router.push('/dashboard')
+  }
+
+  async function handleGoogleLogin() {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/dashboard` },
+    })
   }
 
   return (
@@ -25,15 +47,9 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-9 h-9 rounded-xl bg-gold flex items-center justify-center">
-              <Zap size={20} className="text-dark" fill="currentColor" />
-            </div>
-            <span className="text-2xl font-bold">
-              <span className="text-gradient-gold">Dot</span>
-              <span className="text-text">shot</span>
-            </span>
-          </Link>
+          <div className="flex justify-center mb-6">
+            <DotshotLogo size="md" href="/" />
+          </div>
           <h1 className="text-2xl font-bold mb-1">Welcome back</h1>
           <p className="text-text-muted text-sm">Sign in to your Dotshot account</p>
         </div>
@@ -46,6 +62,8 @@ export default function LoginPage() {
               type="email"
               placeholder="you@example.com"
               icon={<Mail size={16} />}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
             <Input
@@ -53,11 +71,13 @@ export default function LoginPage() {
               type="password"
               placeholder="••••••••"
               icon={<Lock size={16} />}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
 
             {error && (
-              <p className="text-xs text-amber-400 bg-amber-400/10 border border-amber-400/20 rounded-lg px-3 py-2">
+              <p className="text-xs text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">
                 {error}
               </p>
             )}
@@ -84,6 +104,7 @@ export default function LoginPage() {
 
           <button
             type="button"
+            onClick={handleGoogleLogin}
             className="w-full flex items-center justify-center gap-3 bg-surface-2 border border-border-light rounded-lg py-2.5 text-sm font-medium text-text hover:border-border-light hover:bg-border transition-colors"
           >
             <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">

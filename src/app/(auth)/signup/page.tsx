@@ -2,28 +2,61 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Mail, Lock, User, MapPin, Zap, ChevronDown } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Mail, Lock, User, MapPin, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { DotshotLogo } from '@/components/ui/DotshotLogo'
 import { ROLE_LABELS } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
 import type { UserRole } from '@/types'
 
 const roles = Object.entries(ROLE_LABELS) as [UserRole, string][]
 
 export default function SignupPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [role, setRole] = useState<UserRole>('photographer')
   const [step, setStep] = useState<1 | 2>(1)
   const [error, setError] = useState('')
 
+  // Step 1 fields
+  const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  // Step 2 fields
+  const [location, setLocation] = useState('')
+  const [username, setUsername] = useState('')
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (step === 1) { setStep(2); return }
+
     setLoading(true)
     setError('')
-    await new Promise((r) => setTimeout(r, 1000))
-    setLoading(false)
-    setError('Coming soon — Supabase auth will be connected here.')
+
+    const { error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          username: username.replace('@', ''),
+          role,
+          location,
+        },
+      },
+    })
+
+    if (authError) {
+      setError(authError.message)
+      setLoading(false)
+      return
+    }
+
+    // Success — redirect to dashboard
+    router.push('/dashboard')
   }
 
   return (
@@ -31,15 +64,9 @@ export default function SignupPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-9 h-9 rounded-xl bg-gold flex items-center justify-center">
-              <Zap size={20} className="text-dark" fill="currentColor" />
-            </div>
-            <span className="text-2xl font-bold">
-              <span className="text-gradient-gold">Dot</span>
-              <span className="text-text">shot</span>
-            </span>
-          </Link>
+          <div className="flex justify-center mb-6">
+            <DotshotLogo size="md" href="/" />
+          </div>
           <h1 className="text-2xl font-bold mb-1">Create your account</h1>
           <p className="text-text-muted text-sm">Join thousands of creatives on Dotshot</p>
         </div>
@@ -76,6 +103,8 @@ export default function SignupPage() {
                   type="text"
                   placeholder="Your full name"
                   icon={<User size={16} />}
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   required
                 />
                 <Input
@@ -83,6 +112,8 @@ export default function SignupPage() {
                   type="email"
                   placeholder="you@example.com"
                   icon={<Mail size={16} />}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
                 <Input
@@ -90,6 +121,8 @@ export default function SignupPage() {
                   type="password"
                   placeholder="Min. 8 characters"
                   icon={<Lock size={16} />}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={8}
                 />
@@ -120,6 +153,8 @@ export default function SignupPage() {
                   type="text"
                   placeholder="Orlando, FL"
                   icon={<MapPin size={16} />}
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
                   required
                 />
 
@@ -128,11 +163,13 @@ export default function SignupPage() {
                   type="text"
                   placeholder="@yourhandle"
                   icon={<span className="text-text-faint font-bold">@</span>}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
 
                 {error && (
-                  <p className="text-xs text-amber-400 bg-amber-400/10 border border-amber-400/20 rounded-lg px-3 py-2">
+                  <p className="text-xs text-red-400 bg-red-400/10 border border-red-400/20 rounded-lg px-3 py-2">
                     {error}
                   </p>
                 )}
