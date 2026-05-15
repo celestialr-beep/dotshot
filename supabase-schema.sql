@@ -198,17 +198,41 @@ create policy "Users can disconnect." on connections for delete using (auth.uid(
 -- ─── Functions ───────────────────────────────────────────────────────────────
 
 -- Auto-create profile on user signup
+-- SAFE VERSION: handles duplicate usernames and never blocks auth signup
 create or replace function handle_new_user()
 returns trigger as $$
+declare
+  base_username text;
+  final_username text;
+  user_full_name text;
 begin
-  insert into profiles (id, username, full_name, avatar_url)
+  -- Build a clean base username from the email prefix
+  base_username := regexp_replace(split_part(new.email, '@', 1), '[^a-zA-Z0-9_]', '_', 'g');
+  final_username := base_username;
+  user_full_name := coalesce(
+    nullif(trim(new.raw_user_meta_data->>'full_name'), ''),
+    base_username
+  );
+
+  -- If that username is already taken, append 4 random chars
+  if exists (select 1 from profiles where username = final_username) then
+    final_username := base_username || '_' || substr(replace(gen_random_uuid()::text, '-', ''), 1, 4);
+  end if;
+
+  insert into profiles (id, username, full_name, avatar_url, role)
   values (
     new.id,
-    split_part(new.email, '@', 1),
-    coalesce(new.raw_user_meta_data->>'full_name', split_part(new.email, '@', 1)),
-    new.raw_user_meta_data->>'avatar_url'
+    final_username,
+    user_full_name,
+    new.raw_user_meta_data->>'avatar_url',
+    coalesce(nullif(trim(new.raw_user_meta_data->>'role'), ''), 'photographer')
   );
+
   return new;
+exception
+  when others then
+    -- Never block auth signup — if profile creation fails, auth still succeeds
+    return new;
 end;
 $$ language plpgsql security definer;
 

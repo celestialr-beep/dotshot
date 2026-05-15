@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { ROLE_LABELS, ROLE_COLORS, ROLE_GROUPS } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
+import { EarlyAccessBanner } from '@/components/ui/EarlyAccessBanner'
 import type { UserRole } from '@/types'
 import Link from 'next/link'
 
@@ -69,6 +70,13 @@ export default function NetworkPage() {
           Real creative professionals in your city — photographers, MUAs, stylists, musicians, and more.
         </p>
       </div>
+
+      {/* Early access banner — shown to every user, dismissible */}
+      <EarlyAccessBanner
+        storageKey="network_early_access_v1"
+        headline="Your city's creative network is forming right now."
+        body="You're seeing real profiles from real creators who have joined. The network grows with every person who completes their profile and posts a Collab Call. Complete yours so others can find you."
+      />
 
       {/* Search + filter */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
