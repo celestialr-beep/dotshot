@@ -20,9 +20,6 @@ export function Navbar() {
             <Link href="/#features" className="text-sm text-text-muted hover:text-text transition-colors">
               Features
             </Link>
-            <Link href="/#pricing" className="text-sm text-text-muted hover:text-text transition-colors">
-              Pricing
-            </Link>
             <Link href="/forum" className="text-sm text-text-muted hover:text-text transition-colors">
               Community
             </Link>
@@ -31,6 +28,9 @@ export function Navbar() {
             </Link>
             <Link href="/marketplace" className="text-sm text-text-muted hover:text-text transition-colors">
               Marketplace
+            </Link>
+            <Link href="/#pricing" className="text-sm text-text-muted hover:text-text transition-colors">
+              Pricing
             </Link>
           </div>
 
@@ -58,10 +58,10 @@ export function Navbar() {
       {open && (
         <div className="md:hidden border-t border-border bg-surface px-4 py-4 flex flex-col gap-4">
           <Link href="/#features" className="text-sm text-text-muted" onClick={() => setOpen(false)}>Features</Link>
-          <Link href="/#pricing" className="text-sm text-text-muted" onClick={() => setOpen(false)}>Pricing</Link>
           <Link href="/forum" className="text-sm text-text-muted" onClick={() => setOpen(false)}>Community</Link>
           <Link href="/campaigns" className="text-sm text-text-muted" onClick={() => setOpen(false)}>Campaigns</Link>
           <Link href="/marketplace" className="text-sm text-text-muted" onClick={() => setOpen(false)}>Marketplace</Link>
+          <Link href="/#pricing" className="text-sm text-text-muted" onClick={() => setOpen(false)}>Pricing</Link>
           <div className="flex flex-col gap-2 pt-2 border-t border-border">
             <Link href="/login" onClick={() => setOpen(false)}>
               <Button variant="secondary" className="w-full">Sign In</Button>

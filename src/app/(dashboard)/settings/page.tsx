@@ -1,11 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { User, Lock, Bell, Shield, Eye, Save, CheckCircle, AlertTriangle, MapPin, Ghost } from 'lucide-react'
+import { User, Lock, Bell, Shield, Eye, Save, CheckCircle, AlertTriangle, MapPin, Ghost, Pencil, X as XIcon } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Avatar } from '@/components/ui/Avatar'
 import { supabase } from '@/lib/supabase'
+
+const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,20}$/
+const MAX_USERNAME_CHANGES = 3
 
 type Profile = {
   full_name: string
@@ -67,6 +70,13 @@ export default function SettingsPage() {
   const [mapVisible, setMapVisible] = useState(false)
   const [mapToggling, setMapToggling] = useState(false)
 
+  // Username editing
+  const [usernameChanges, setUsernameChanges] = useState(0)
+  const [editingUsername, setEditingUsername] = useState(false)
+  const [usernameInput, setUsernameInput] = useState('')
+  const [usernameError, setUsernameError] = useState('')
+  const [usernameSaving, setUsernameSaving] = useState(false)
+
   useEffect(() => {
     async function loadProfile() {
       const { data: { user } } = await supabase.auth.getUser()
@@ -74,12 +84,13 @@ export default function SettingsPage() {
       setUserId(user.id)
       const { data } = await supabase
         .from('profiles')
-        .select('full_name, username, bio, location, website, avatar_url, role, map_visible')
+        .select('full_name, username, bio, location, website, avatar_url, role, map_visible, username_changes')
         .eq('id', user.id)
         .single()
       if (data) {
         setProfile(data as Profile)
         setMapVisible((data as Profile & { map_visible: boolean }).map_visible ?? false)
+        setUsernameChanges((data as Profile & { username_changes: number }).username_changes ?? 0)
       }
     }
     loadProfile()
@@ -107,6 +118,56 @@ export default function SettingsPage() {
     if (err) {
       setError(err.message)
     } else {
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    }
+  }
+
+  async function saveUsername() {
+    setUsernameError('')
+    const trimmed = usernameInput.trim().toLowerCase()
+
+    if (trimmed === profile.username) {
+      setEditingUsername(false)
+      return
+    }
+    if (!USERNAME_REGEX.test(trimmed)) {
+      setUsernameError('3–20 characters: letters, numbers, and underscores only.')
+      return
+    }
+    if (usernameChanges >= MAX_USERNAME_CHANGES) {
+      setUsernameError('You\'ve used all 3 username changes. This handle is now permanent.')
+      return
+    }
+
+    setUsernameSaving(true)
+    // Check uniqueness
+    const { data: existing } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('username', trimmed)
+      .neq('id', userId!)
+      .maybeSingle()
+
+    if (existing) {
+      setUsernameError('That username is already taken. Try another.')
+      setUsernameSaving(false)
+      return
+    }
+
+    const newCount = usernameChanges + 1
+    const { error: err } = await supabase
+      .from('profiles')
+      .update({ username: trimmed, username_changes: newCount })
+      .eq('id', userId!)
+
+    setUsernameSaving(false)
+    if (err) {
+      setUsernameError(err.message)
+    } else {
+      setProfile((prev) => ({ ...prev, username: trimmed }))
+      setUsernameChanges(newCount)
+      setEditingUsername(false)
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     }
@@ -203,12 +264,71 @@ export default function SettingsPage() {
               placeholder="Your full name"
             />
             <div>
-              <label className="block text-sm font-medium text-text-muted mb-1.5">Username</label>
-              <div className="flex items-center gap-2 bg-surface-2 border border-border rounded-lg px-3 py-2.5">
-                <span className="text-text-faint text-sm">@</span>
-                <span className="text-sm text-text-muted">{profile.username}</span>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-sm font-medium text-text-muted">Username</label>
+                {!editingUsername && usernameChanges < MAX_USERNAME_CHANGES && (
+                  <button
+                    type="button"
+                    onClick={() => { setUsernameInput(profile.username); setUsernameError(''); setEditingUsername(true) }}
+                    className="flex items-center gap-1.5 text-xs text-gold hover:text-gold-light font-medium transition-colors"
+                  >
+                    <Pencil size={12} /> Edit
+                  </button>
+                )}
               </div>
-              <p className="text-xs text-text-faint mt-1">Username cannot be changed once set.</p>
+
+              {editingUsername ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 bg-surface border border-gold/40 rounded-lg px-3 py-2.5 focus-within:border-gold focus-within:ring-1 focus-within:ring-gold/30 transition-colors">
+                    <span className="text-text-faint text-sm">@</span>
+                    <input
+                      value={usernameInput}
+                      onChange={(e) => setUsernameInput(e.target.value.toLowerCase())}
+                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); saveUsername() } if (e.key === 'Escape') setEditingUsername(false) }}
+                      placeholder="new_username"
+                      maxLength={20}
+                      autoFocus
+                      className="flex-1 bg-transparent text-sm text-text placeholder:text-text-faint focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setEditingUsername(false)}
+                      className="text-text-faint hover:text-text transition-colors"
+                    >
+                      <XIcon size={14} />
+                    </button>
+                  </div>
+                  {usernameError && (
+                    <p className="text-xs text-red-400 flex items-center gap-1.5">
+                      <AlertTriangle size={12} /> {usernameError}
+                    </p>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-text-faint">
+                      {MAX_USERNAME_CHANGES - usernameChanges - 1} change{MAX_USERNAME_CHANGES - usernameChanges - 1 !== 1 ? 's' : ''} remaining after this
+                    </p>
+                    <Button
+                      type="button"
+                      size="sm"
+                      loading={usernameSaving}
+                      onClick={saveUsername}
+                    >
+                      Save Handle
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 bg-surface-2 border border-border rounded-lg px-3 py-2.5">
+                  <span className="text-text-faint text-sm">@</span>
+                  <span className="text-sm text-text">{profile.username}</span>
+                </div>
+              )}
+
+              <p className="text-xs text-text-faint mt-1.5">
+                {usernameChanges >= MAX_USERNAME_CHANGES
+                  ? '🔒 This handle is now permanent — you\'ve used all 3 changes.'
+                  : `You can change your username ${MAX_USERNAME_CHANGES - usernameChanges} more time${MAX_USERNAME_CHANGES - usernameChanges !== 1 ? 's' : ''} before it locks permanently.`}
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-text-muted mb-1.5">Bio</label>

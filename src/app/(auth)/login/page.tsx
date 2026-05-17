@@ -13,7 +13,7 @@ import { supabase } from '@/lib/supabase'
 // Visit unsplash.com, find a photo, copy the ID from the URL.
 // Man and woman in front of a camera — network studio vibe
 const HERO_PHOTO =
-  'https://images.unsplash.com/photo-8umEwssg2eU?auto=format&fit=crop&w=1080&q=90'
+  'https://source.unsplash.com/8umEwssg2eU/1080x720'
 
 const roles = ['Photographers', 'Videographers', 'Makeup Artists', 'Models', 'Musicians', 'Stylists']
 

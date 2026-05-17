@@ -230,7 +230,7 @@ export default function HomePage() {
             <div className="relative overflow-hidden rounded-2xl row-span-2 group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-HFSuP4fVCmg?auto=format&fit=crop&w=700&q=90"
+                src="https://source.unsplash.com/HFSuP4fVCmg/700x900"
                 alt="Group of photographers with cameras"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
@@ -249,7 +249,7 @@ export default function HomePage() {
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-Py3wHdjMaAI?auto=format&fit=crop&w=600&q=90"
+                src="https://source.unsplash.com/Py3wHdjMaAI/600x400"
                 alt="Photographer holding DSLR camera"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
@@ -268,7 +268,7 @@ export default function HomePage() {
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-_hAaFD1ucfk?auto=format&fit=crop&w=600&q=90"
+                src="https://source.unsplash.com/_hAaFD1ucfk/600x400"
                 alt="Makeup artist — bold red lip, gold hoops"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
@@ -287,7 +287,7 @@ export default function HomePage() {
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-ywNQZTcERUE?auto=format&fit=crop&w=600&q=90"
+                src="https://source.unsplash.com/ywNQZTcERUE/600x400"
                 alt="Music producer at workstation"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
@@ -306,7 +306,7 @@ export default function HomePage() {
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-A-OGHtfm0Vo?auto=format&fit=crop&w=600&q=90"
+                src="https://source.unsplash.com/A-OGHtfm0Vo/600x400"
                 alt="Videographer with Canon camera"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
