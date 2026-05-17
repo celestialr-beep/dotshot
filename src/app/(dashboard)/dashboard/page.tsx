@@ -12,10 +12,10 @@ import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
 // Curated welcome photo — swap the ID at unsplash.com
-// Professional camera gear / editing workspace — tools of the creative trade
+// Person holding camera in front of laptop — creative tools, studio vibe
 // Swap the photo ID at unsplash.com to change the image
 const WELCOME_PHOTO =
-  'https://images.unsplash.com/photo-1452721226468-f03bfefd1a57?auto=format&fit=crop&w=1200&q=90&bri=8&sat=12'
+  'https://images.unsplash.com/photo-eh96uvNfvkc?auto=format&fit=crop&w=1200&q=90'
 
 function getGreeting() {
   const hour = new Date().getHours()
