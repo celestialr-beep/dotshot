@@ -1,10 +1,14 @@
 import { DashboardNav } from '@/components/layout/DashboardNav'
 import { MobileNav } from '@/components/layout/MobileNav'
 import { MobileHeader } from '@/components/layout/MobileHeader'
+import { OnboardingWalkthrough } from '@/components/ui/OnboardingWalkthrough'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-dark">
+      {/* First-time user walkthrough — shows once, dismissed via localStorage */}
+      <OnboardingWalkthrough />
+
       {/* Desktop sidebar — hidden on mobile */}
       <DashboardNav />
 

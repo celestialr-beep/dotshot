@@ -19,6 +19,7 @@ import {
   X,
   MapPin,
   CalendarDays,
+  GraduationCap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
@@ -41,6 +42,7 @@ const moreNav = [
   { href: '/messages', icon: Users, label: 'Messages' },
   { href: '/safety', icon: Shield, label: 'Gig Safety' },
   { href: '/agreement', icon: FileText, label: 'Agreements' },
+  { href: '/education', icon: GraduationCap, label: 'Academy' },
 ]
 
 export function MobileNav() {
