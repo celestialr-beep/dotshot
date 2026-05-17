@@ -12,7 +12,7 @@ import { supabase } from '@/lib/supabase'
 // Curated Unsplash photo — replace the photo ID to swap the image.
 // Visit unsplash.com, find a photo, copy the ID from the URL.
 const HERO_PHOTO =
-  'https://images.unsplash.com/photo-1598550874175-4d0ef436c909?auto=format&fit=crop&w=1080&q=85'
+  'https://images.unsplash.com/photo-1598550874175-4d0ef436c909?auto=format&fit=crop&w=1080&q=85&bri=15&sat=15'
 
 const roles = ['Photographers', 'Videographers', 'Makeup Artists', 'Models', 'Musicians', 'Stylists']
 

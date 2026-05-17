@@ -14,7 +14,7 @@ import type { UserRole } from '@/types'
 // Curated Unsplash photo — replace the photo ID to swap the image.
 // Visit unsplash.com, find a photo, copy the ID from the URL.
 const HERO_PHOTO =
-  'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1080&q=85'
+  'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1080&q=85&bri=15&sat=15'
 
 // Three rotating quotes — one shows per session
 const quotes = [

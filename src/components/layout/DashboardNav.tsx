@@ -68,7 +68,7 @@ export function DashboardNav() {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 p-4 flex flex-col gap-1">
+      <nav className="flex-1 p-4 flex flex-col gap-1 overflow-y-auto">
         {navItems.map(({ href, icon: Icon, label }) => {
           const active = pathname === href || pathname.startsWith(href + '/')
           return (
