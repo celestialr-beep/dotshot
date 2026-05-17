@@ -13,12 +13,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <DashboardNav />
 
       {/* Main content area */}
-      <main className="flex-1 lg:ml-60 min-h-screen flex flex-col">
+      <main className="flex-1 lg:ml-60 min-h-screen flex flex-col w-0 overflow-x-hidden">
         {/* Mobile top header — hidden on desktop */}
         <MobileHeader />
 
         {/* Page content — extra bottom padding on mobile so nothing hides behind the tab bar */}
-        <div className="flex-1 pb-20 lg:pb-0">
+        <div className="flex-1 pb-20 lg:pb-0 min-w-0">
           {children}
         </div>
       </main>

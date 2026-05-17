@@ -14,9 +14,9 @@ import { supabase } from '@/lib/supabase'
 // Curated welcome photo — swap the ID at unsplash.com
 // Person holding camera in front of laptop — creative tools, studio vibe
 // Swap the photo ID at unsplash.com to change the image
-// Diverse creative team brainstorming / collaborating on set
+// Creative professionals on set — cameras, lights, action
 const WELCOME_PHOTO =
-  'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80'
+  'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1200&q=80'
 
 function getGreeting() {
   const hour = new Date().getHours()

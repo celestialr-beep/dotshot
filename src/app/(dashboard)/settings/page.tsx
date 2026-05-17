@@ -74,6 +74,8 @@ export default function SettingsPage() {
   // Avatar upload
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [avatarUploading, setAvatarUploading] = useState(false)
+  // Prevent onAuthStateChange re-fires (token refresh) from wiping form state
+  const profileFetchedRef = useRef(false)
 
   // Username editing
   const [usernameChanges, setUsernameChanges] = useState(0)
@@ -100,17 +102,18 @@ export default function SettingsPage() {
       setProfileLoading(false)
     }
 
-    // onAuthStateChange fires immediately with the current session —
-    // more reliable than getSession() in Next.js App Router where
-    // getSession() can return null on client-side navigations
+    // onAuthStateChange fires immediately with the current session.
+    // profileFetchedRef prevents TOKEN_REFRESHED events from
+    // re-fetching and overwriting unsaved form changes.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         if (!mounted) return
         const user = session?.user
-        if (user) {
+        if (user && !profileFetchedRef.current) {
+          profileFetchedRef.current = true
           setUserId(user.id)
           fetchProfile(user.id)
-        } else {
+        } else if (!user) {
           setProfileLoading(false)
         }
       }
