@@ -229,8 +229,8 @@ export default function HomePage() {
             <div className="relative overflow-hidden rounded-2xl row-span-2 group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=700&q=80"
-                alt="Camera equipment — studio vibe"
+                src="https://images.unsplash.com/photo-1713354738889-1c8b05983e75?auto=format&fit=crop&w=700&q=80"
+                alt="Photographer — studio vibe"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent" />
@@ -248,7 +248,7 @@ export default function HomePage() {
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=600&q=80"
+                src="https://images.unsplash.com/photo-1632187956267-3a7b360c557a?auto=format&fit=crop&w=600&q=80"
                 alt="Film director on set"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
@@ -267,8 +267,8 @@ export default function HomePage() {
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1512361436605-a484bdb34b5f?auto=format&fit=crop&w=600&q=80"
-                alt="Vibrant editorial makeup look"
+                src="https://images.unsplash.com/photo-1709477542170-f11ee7d471a0?auto=format&fit=crop&w=600&q=80"
+                alt="Makeup artist — vibrant editorial look"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />
@@ -305,8 +305,8 @@ export default function HomePage() {
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1524169113253-c6ba17398f39?auto=format&fit=crop&w=600&q=80"
-                alt="Behind the scenes studio production"
+                src="https://images.unsplash.com/photo-1663867840932-91b9151c0093?auto=format&fit=crop&w=600&q=80"
+                alt="Videographer — behind the scenes"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />

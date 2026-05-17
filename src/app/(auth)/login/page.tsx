@@ -9,9 +9,9 @@ import { Input } from '@/components/ui/Input'
 import { DotshotLogo } from '@/components/ui/DotshotLogo'
 import { supabase } from '@/lib/supabase'
 
-// Creative network / collaboration vibe — swap photo ID at unsplash.com
+// 3 creatives at a table — "the connections you make will last forever"
 const HERO_PHOTO =
-  'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1080&q=80'
+  'https://source.unsplash.com/8umEwssg2eU/1080x720'
 
 const roles = ['Photographers', 'Videographers', 'Makeup Artists', 'Models', 'Musicians', 'Stylists']
 
