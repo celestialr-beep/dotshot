@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { User, Lock, Bell, Shield, Eye, Save, CheckCircle, AlertTriangle, MapPin, Ghost, Pencil, X as XIcon } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -70,6 +70,10 @@ export default function SettingsPage() {
   const [mapVisible, setMapVisible] = useState(false)
   const [mapToggling, setMapToggling] = useState(false)
 
+  // Avatar upload
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [avatarUploading, setAvatarUploading] = useState(false)
+
   // Username editing
   const [usernameChanges, setUsernameChanges] = useState(0)
   const [editingUsername, setEditingUsername] = useState(false)
@@ -100,6 +104,47 @@ export default function SettingsPage() {
     setProfile((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file || !userId) return
+    const allowed = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowed.includes(file.type)) {
+      setError('Only JPG, PNG, or WebP images are supported.')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Photo must be under 5 MB.')
+      return
+    }
+    setAvatarUploading(true)
+    setError('')
+    const ext = file.name.split('.').pop() ?? 'jpg'
+    const path = `${userId}/avatar.${ext}`
+    const { error: uploadErr } = await supabase.storage
+      .from('avatars')
+      .upload(path, file, { upsert: true, contentType: file.type })
+    if (uploadErr) {
+      setError(uploadErr.message)
+      setAvatarUploading(false)
+      return
+    }
+    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
+    const { error: updateErr } = await supabase
+      .from('profiles')
+      .update({ avatar_url: publicUrl })
+      .eq('id', userId)
+    setAvatarUploading(false)
+    if (updateErr) {
+      setError(updateErr.message)
+    } else {
+      setProfile((prev) => ({ ...prev, avatar_url: publicUrl }))
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    }
+    // Reset file input so the same file can be re-selected
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
   async function saveProfile(e: React.FormEvent) {
     e.preventDefault()
     if (!userId) return
@@ -124,6 +169,10 @@ export default function SettingsPage() {
   }
 
   async function saveUsername() {
+    if (!userId) {
+      setUsernameError('Session not loaded yet. Please wait a moment and try again.')
+      return
+    }
     setUsernameError('')
     const trimmed = usernameInput.trim().toLowerCase()
 
@@ -240,15 +289,31 @@ export default function SettingsPage() {
           <div className="bg-surface border border-border rounded-xl p-5">
             <h2 className="font-semibold text-sm mb-4">Profile Photo</h2>
             <div className="flex items-center gap-4">
-              <Avatar name={profile.full_name || 'You'} src={profile.avatar_url} size="lg" />
+              <div className="relative flex-shrink-0">
+                <Avatar name={profile.full_name || 'You'} src={profile.avatar_url} size="lg" />
+                {avatarUploading && (
+                  <div className="absolute inset-0 rounded-full bg-dark/60 flex items-center justify-center">
+                    <div className="w-4 h-4 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
+              </div>
               <div>
                 <button
                   type="button"
-                  className="text-sm text-gold hover:text-gold-light font-medium transition-colors"
+                  disabled={avatarUploading}
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-sm text-gold hover:text-gold-light font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Upload new photo
+                  {avatarUploading ? 'Uploading…' : 'Upload new photo'}
                 </button>
-                <p className="text-xs text-text-faint mt-1">JPG or PNG · Max 5MB · Square recommended</p>
+                <p className="text-xs text-text-faint mt-1">JPG, PNG, or WebP · Max 5 MB · Square crop looks best</p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={handleAvatarUpload}
+                />
               </div>
             </div>
           </div>

@@ -225,13 +225,12 @@ export default function HomePage() {
           {/* Editorial photo grid — 3 col, 2 rows, left card is tall */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3" style={{ height: 'clamp(360px, 55vw, 560px)' }}>
 
-            {/* Tall left — Photographers: group with cameras, warm brown-toned vibe */}
-            {/* Swap photo ID at unsplash.com to change this image */}
+            {/* Tall left — camera & gear flat-lay, studio-tools vibe */}
             <div className="relative overflow-hidden rounded-2xl row-span-2 group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://source.unsplash.com/HFSuP4fVCmg/700x900"
-                alt="Group of photographers with cameras"
+                src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=700&q=80"
+                alt="Camera equipment — studio vibe"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent" />
@@ -245,12 +244,12 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Top-middle — Photography: person holding black DSLR camera */}
+            {/* Top-middle — videographer / director behind camera */}
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://source.unsplash.com/Py3wHdjMaAI/600x400"
-                alt="Photographer holding DSLR camera"
+                src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=600&q=80"
+                alt="Videographer behind camera"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />
@@ -264,12 +263,12 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Top-right — Makeup Artists: bold red lip, gold hoops, editorial */}
+            {/* Top-right — Makeup / beauty editorial */}
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://source.unsplash.com/_hAaFD1ucfk/600x400"
-                alt="Makeup artist — bold red lip, gold hoops"
+                src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=600&q=80"
+                alt="Makeup artist at work"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />
@@ -283,11 +282,11 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Bottom-middle — Musicians & Producers: man at production workstation */}
+            {/* Bottom-middle — Music producer at workstation */}
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://source.unsplash.com/ywNQZTcERUE/600x400"
+                src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=600&q=80"
                 alt="Music producer at workstation"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
@@ -302,12 +301,12 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Bottom-right — Videographers: person holding Canon DSLR */}
+            {/* Bottom-right — Photographer with DSLR camera */}
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://source.unsplash.com/A-OGHtfm0Vo/600x400"
-                alt="Videographer with Canon camera"
+                src="https://images.unsplash.com/photo-1554048612-b6a482bc67e5?auto=format&fit=crop&w=600&q=80"
+                alt="Photographer with DSLR camera"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />

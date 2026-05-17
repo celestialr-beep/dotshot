@@ -9,11 +9,9 @@ import { Input } from '@/components/ui/Input'
 import { DotshotLogo } from '@/components/ui/DotshotLogo'
 import { supabase } from '@/lib/supabase'
 
-// Curated Unsplash photo — replace the photo ID to swap the image.
-// Visit unsplash.com, find a photo, copy the ID from the URL.
-// Man and woman in front of a camera — network studio vibe
+// Creative network / collaboration vibe — swap photo ID at unsplash.com
 const HERO_PHOTO =
-  'https://source.unsplash.com/8umEwssg2eU/1080x720'
+  'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1080&q=80'
 
 const roles = ['Photographers', 'Videographers', 'Makeup Artists', 'Models', 'Musicians', 'Stylists']
 
