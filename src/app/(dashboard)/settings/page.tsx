@@ -316,11 +316,14 @@ export default function SettingsPage() {
               <div>
                 <button
                   type="button"
-                  disabled={avatarUploading}
-                  onClick={() => fileInputRef.current?.click()}
+                  disabled={profileLoading || avatarUploading}
+                  onClick={() => {
+                    if (!userId) { setError('Session not ready yet — please wait a moment.'); return }
+                    fileInputRef.current?.click()
+                  }}
                   className="text-sm text-gold hover:text-gold-light font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {avatarUploading ? 'Uploading…' : 'Upload new photo'}
+                  {profileLoading ? 'Loading…' : avatarUploading ? 'Uploading…' : 'Upload new photo'}
                 </button>
                 <p className="text-xs text-text-faint mt-1">JPG, PNG, or WebP · Max 5 MB · Square crop looks best</p>
                 <input
