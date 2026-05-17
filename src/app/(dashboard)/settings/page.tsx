@@ -83,18 +83,15 @@ export default function SettingsPage() {
   const [usernameSaving, setUsernameSaving] = useState(false)
 
   useEffect(() => {
-    async function loadProfile() {
-      // getSession() reads from localStorage — no network round-trip,
-      // so userId is set before the user can interact with any form field
-      const { data: { session } } = await supabase.auth.getSession()
-      const user = session?.user
-      if (!user) { setProfileLoading(false); return }
-      setUserId(user.id)
+    let mounted = true
+
+    async function fetchProfile(uid: string) {
       const { data } = await supabase
         .from('profiles')
         .select('full_name, username, bio, location, website, avatar_url, role, map_visible, username_changes')
-        .eq('id', user.id)
+        .eq('id', uid)
         .single()
+      if (!mounted) return
       if (data) {
         setProfile(data as Profile)
         setMapVisible((data as Profile & { map_visible: boolean }).map_visible ?? false)
@@ -102,7 +99,27 @@ export default function SettingsPage() {
       }
       setProfileLoading(false)
     }
-    loadProfile()
+
+    // onAuthStateChange fires immediately with the current session —
+    // more reliable than getSession() in Next.js App Router where
+    // getSession() can return null on client-side navigations
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (!mounted) return
+        const user = session?.user
+        if (user) {
+          setUserId(user.id)
+          fetchProfile(user.id)
+        } else {
+          setProfileLoading(false)
+        }
+      }
+    )
+
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   function handleProfileChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -353,7 +370,7 @@ export default function SettingsPage() {
                 {!editingUsername && usernameChanges < MAX_USERNAME_CHANGES && (
                   <button
                     type="button"
-                    disabled={profileLoading}
+                    disabled={profileLoading || !userId}
                     onClick={() => { setUsernameInput(profile.username); setUsernameError(''); setEditingUsername(true) }}
                     className="flex items-center gap-1.5 text-xs text-gold hover:text-gold-light font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
