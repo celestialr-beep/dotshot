@@ -21,14 +21,14 @@ import { Button } from '@/components/ui/Button'
 import { Badge } from '@/components/ui/Badge'
 
 const roles = [
-  { icon: Camera, label: 'Photographers', count: '1.2K+' },
-  { icon: Video, label: 'Videographers', count: '840+' },
-  { icon: Sparkles, label: 'Makeup Artists', count: '2.1K+' },
-  { icon: Scissors, label: 'Hairstylists', count: '1.7K+' },
-  { icon: Users, label: 'Models & Talent', count: '980+' },
-  { icon: Star, label: 'Musicians & DJs', count: '620+' },
-  { icon: Globe, label: 'Writers & Directors', count: '530+' },
-  { icon: Trophy, label: 'Dancers & Performers', count: '750+' },
+  { icon: Camera, label: 'Photographers' },
+  { icon: Video, label: 'Videographers' },
+  { icon: Sparkles, label: 'Makeup Artists' },
+  { icon: Scissors, label: 'Hairstylists' },
+  { icon: Users, label: 'Models & Talent' },
+  { icon: Star, label: 'Musicians & DJs' },
+  { icon: Globe, label: 'Writers & Directors' },
+  { icon: Trophy, label: 'Dancers & Performers' },
 ]
 
 const features = [
@@ -131,11 +131,11 @@ const pricing = [
   },
 ]
 
-const stats = [
-  { value: '5,800+', label: 'Creatives' },
-  { value: '$2.4M+', label: 'Paid Out' },
-  { value: '340+', label: 'Campaigns' },
-  { value: '98%', label: 'Satisfaction' },
+const foundingPillars = [
+  { value: 'Orlando, FL', label: 'Launching Here First' },
+  { value: 'Free', label: 'Always Free to Join' },
+  { value: '35+', label: 'Creative Roles Supported' },
+  { value: 'Global', label: 'Expansion Roadmap' },
 ]
 
 export default function HomePage() {
@@ -181,29 +181,155 @@ export default function HomePage() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-4">
-            {roles.map(({ icon: Icon, label, count }) => (
+            {roles.map(({ icon: Icon, label }) => (
               <div
                 key={label}
                 className="flex items-center gap-2 bg-surface border border-border rounded-full px-4 py-2"
               >
                 <Icon size={15} className="text-gold" />
                 <span className="text-sm text-text">{label}</span>
-                <span className="text-xs text-text-faint">{count}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ─── Stats ─────────────────────────────── */}
+      {/* ─── Founding Pillars ─────────────────────────────── */}
       <section className="py-12 border-y border-border bg-surface/50">
         <div className="max-w-4xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map(({ value, label }) => (
+          {foundingPillars.map(({ value, label }) => (
             <div key={label} className="text-center">
               <div className="text-3xl font-bold text-gradient-gold">{value}</div>
               <div className="text-sm text-text-muted mt-1">{label}</div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ─── Visual Showcase ─────────────────────────────── */}
+      {/* Photo IDs: visit unsplash.com, search by role, copy the ID from the URL */}
+      <section className="py-20 px-4 overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <Badge variant="muted" className="mb-4">Inside the Shoot</Badge>
+            <h2 className="text-4xl font-bold mb-3">
+              Where creative work{' '}
+              <span className="text-gradient-gold">actually happens</span>
+            </h2>
+            <p className="text-text-muted max-w-xl mx-auto text-sm sm:text-base">
+              35+ creative roles across every discipline. This is the platform built for the
+              people behind the lens, in the chair, and on set.
+            </p>
+          </div>
+
+          {/* Editorial photo grid — 3 col, 2 rows, left card is tall */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3" style={{ height: 'clamp(360px, 55vw, 560px)' }}>
+
+            {/* Tall left card — Photographers */}
+            <div className="relative overflow-hidden rounded-2xl row-span-2 group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=700&q=80"
+                alt="Photographer at work"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-gold/20 backdrop-blur-sm border border-gold/30 flex items-center justify-center">
+                    <Camera size={13} className="text-gold" />
+                  </div>
+                  <span className="text-sm font-semibold text-white drop-shadow">Photographers</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Top-middle — Makeup Artists */}
+            <div className="relative overflow-hidden rounded-2xl group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=600&q=80"
+                alt="Makeup artist at work"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-md bg-gold/20 backdrop-blur-sm border border-gold/30 flex items-center justify-center">
+                    <Sparkles size={11} className="text-gold" />
+                  </div>
+                  <span className="text-xs font-semibold text-white drop-shadow">Makeup Artists</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Top-right — Musicians */}
+            <div className="relative overflow-hidden rounded-2xl group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80"
+                alt="Musician performing"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-md bg-gold/20 backdrop-blur-sm border border-gold/30 flex items-center justify-center">
+                    <Star size={11} className="text-gold" />
+                  </div>
+                  <span className="text-xs font-semibold text-white drop-shadow">Musicians & DJs</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom-middle — Models & Talent */}
+            <div className="relative overflow-hidden rounded-2xl group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=600&q=80"
+                alt="Fashion model on set"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-md bg-gold/20 backdrop-blur-sm border border-gold/30 flex items-center justify-center">
+                    <Users size={11} className="text-gold" />
+                  </div>
+                  <span className="text-xs font-semibold text-white drop-shadow">Models & Talent</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom-right — Videographers */}
+            <div className="relative overflow-hidden rounded-2xl group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=600&q=80"
+                alt="Videographer filming"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-md bg-gold/20 backdrop-blur-sm border border-gold/30 flex items-center justify-center">
+                    <Video size={11} className="text-gold" />
+                  </div>
+                  <span className="text-xs font-semibold text-white drop-shadow">Videographers</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Caption row */}
+          <div className="flex items-center justify-center gap-6 mt-6 text-xs text-text-faint">
+            <span>Photos sourced from Unsplash</span>
+            <span>·</span>
+            <Link href="/signup" className="text-gold hover:underline">
+              Create your profile →
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -345,7 +471,7 @@ export default function HomePage() {
             <span className="text-gradient-gold">with one click.</span>
           </h2>
           <p className="text-text-muted mb-8 text-lg">
-            Join thousands of creatives already building their careers on Dotshot.
+            Be a founding member. The network you build today is the reputation you carry forever.
           </p>
           <Link href="/signup">
             <Button size="lg" className="glow-gold-lg">

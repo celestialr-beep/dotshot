@@ -17,6 +17,8 @@ import {
   Settings,
   LogOut,
   X,
+  MapPin,
+  CalendarDays,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
@@ -28,13 +30,15 @@ const primaryNav = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Home' },
   { href: '/campaigns', icon: Briefcase, label: 'Campaigns' },
   { href: '/forum', icon: MessageSquare, label: 'Forum' },
-  { href: '/messages', icon: Users, label: 'Messages' },
+  { href: '/map', icon: MapPin, label: 'Radar' },
 ]
 
 // Everything else lives in the "More" sheet
 const moreNav = [
   { href: '/network', icon: Network, label: 'Network' },
+  { href: '/calendar', icon: CalendarDays, label: 'Calendar' },
   { href: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
+  { href: '/messages', icon: Users, label: 'Messages' },
   { href: '/safety', icon: Shield, label: 'Gig Safety' },
   { href: '/agreement', icon: FileText, label: 'Agreements' },
 ]

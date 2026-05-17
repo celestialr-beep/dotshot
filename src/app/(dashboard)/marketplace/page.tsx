@@ -1,14 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Search, Plus, MapPin, Tag, RefreshCw, ShoppingBag,
-  Camera, Filter, Star, CheckCircle, Info,
+  Camera, Filter, Star, CheckCircle, Info, Package,
 } from 'lucide-react'
 import { Avatar } from '@/components/ui/Avatar'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
+import { EarlyAccessBanner } from '@/components/ui/EarlyAccessBanner'
 import { formatCurrency, timeAgo } from '@/lib/utils'
+import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 type ListingType = 'sell' | 'trade' | 'free'
@@ -22,115 +24,17 @@ interface Listing {
   type: ListingType
   condition: Condition
   category: string
-  location: string
+  location: string | null
+  images: string[]
   created_at: string
   seller: {
     username: string
     full_name: string
-    avatar_url: null
+    avatar_url: string | null
     is_verified: boolean
     rating: number
   }
 }
-
-const mockListings: Listing[] = [
-  {
-    id: '1',
-    title: 'Sony A7 IV + 24-70mm f/2.8 GM Bundle',
-    description: 'Full Sony A7 IV kit in excellent condition. Upgrading to A9 III. Includes original box, two batteries, and charger. Immaculately maintained — treated like new.',
-    price: 3800,
-    type: 'sell',
-    condition: 'like_new',
-    category: 'Cameras & Lenses',
-    location: 'Orlando, FL',
-    created_at: new Date(Date.now() - 3 * 3600000).toISOString(),
-    seller: { username: 'marcus_shots', full_name: 'Marcus Patterson', avatar_url: null, is_verified: true, rating: 4.9 },
-  },
-  {
-    id: '2',
-    title: 'Profoto B10 Plus Strobe — 2 Pack',
-    description: 'Two Profoto B10 Plus heads with batteries, chargers, and a large octobox. Used on 15 professional shoots. Still in original boxes. A serious investment for serious work.',
-    price: 2200,
-    type: 'sell',
-    condition: 'good',
-    category: 'Lighting',
-    location: 'Miami, FL',
-    created_at: new Date(Date.now() - 8 * 3600000).toISOString(),
-    seller: { username: 'rex_films', full_name: 'Rex Williams', avatar_url: null, is_verified: true, rating: 4.8 },
-  },
-  {
-    id: '3',
-    title: '50-Piece Floral Arrangement Set — Campaign Ready',
-    description: 'Professional-grade silk and dried flower arrangements used across three editorial campaigns. Roses, pampas, eucalyptus, and tropical leaves. All pieces in excellent display condition — far too good to discard. Perfect for a set designer, photographer, or event team.',
-    price: 180,
-    type: 'sell',
-    condition: 'good',
-    category: 'Florals & Botanicals',
-    location: 'Orlando, FL',
-    created_at: new Date(Date.now() - 5 * 3600000).toISOString(),
-    seller: { username: 'nia_style', full_name: 'Nia Davis', avatar_url: null, is_verified: false, rating: 4.6 },
-  },
-  {
-    id: '4',
-    title: 'Luxury Gold & Ivory Party Décor Collection',
-    description: 'Full luxury event décor set: gold arch frame, ivory draping fabric, LED string lights, candle holders, and table centrepieces. Used for one high-end brand activation. Everything is immaculate and packed in labelled storage boxes. A waste to throw out — perfect for another shoot or event team.',
-    price: 420,
-    type: 'sell',
-    condition: 'like_new',
-    category: 'Event & Set Décor',
-    location: 'Atlanta, GA',
-    created_at: new Date(Date.now() - 10 * 3600000).toISOString(),
-    seller: { username: 'bella_model', full_name: 'Isabella Rosa', avatar_url: null, is_verified: true, rating: 4.9 },
-  },
-  {
-    id: '5',
-    title: 'TRADE: DJI Ronin 4D for Sony FX6',
-    description: 'Looking to trade my DJI Ronin 4D (10 professional projects, no issues) for a Sony FX6. Open to small cash difference either way. Serious traders only.',
-    price: null,
-    type: 'trade',
-    condition: 'good',
-    category: 'Video Equipment',
-    location: 'Orlando, FL',
-    created_at: new Date(Date.now() - 24 * 3600000).toISOString(),
-    seller: { username: 'chen_art', full_name: 'Chen Li', avatar_url: null, is_verified: false, rating: 4.6 },
-  },
-  {
-    id: '6',
-    title: 'Editorial Wardrobe Bundle — Sizes S/M (12 Pieces)',
-    description: 'Twelve editorial fashion pieces used across three brand campaigns. All dry-cleaned and professionally stored. Includes structured blazers, statement outerwear, and accessories. These are real garments from real shoots — not throwaways. Ideal for a stylist building their kit.',
-    price: 350,
-    type: 'sell',
-    condition: 'good',
-    category: 'Costumes & Wardrobe',
-    location: 'New York, NY',
-    created_at: new Date(Date.now() - 2 * 24 * 3600000).toISOString(),
-    seller: { username: 'sofia_glam', full_name: 'Sofia Morales', avatar_url: null, is_verified: true, rating: 5.0 },
-  },
-  {
-    id: '7',
-    title: 'FREE: 9ft White Seamless Backdrop Roll — Half Used',
-    description: 'Switched to a portable system. This roll has plenty of useable paper left. Must pick up in Orlando. Free to a working creative — not for resale.',
-    price: 0,
-    type: 'free',
-    condition: 'good',
-    category: 'Backdrops & Surfaces',
-    location: 'Orlando, FL',
-    created_at: new Date(Date.now() - 3 * 24 * 3600000).toISOString(),
-    seller: { username: 'jayla_hair', full_name: 'Jayla Thompson', avatar_url: null, is_verified: false, rating: 4.7 },
-  },
-  {
-    id: '8',
-    title: 'Vintage Furniture Set — Art Direction / Set Design',
-    description: 'Curated vintage furniture used on multiple editorial sets: velvet chaise lounge, antique side table, ornate mirror, and two accent chairs. All structurally sound and visually stunning. Selling as a set. These deserve another campaign, not a storage unit.',
-    price: 750,
-    type: 'sell',
-    condition: 'good',
-    category: 'Furniture & Props',
-    location: 'Los Angeles, CA',
-    created_at: new Date(Date.now() - 4 * 24 * 3600000).toISOString(),
-    seller: { username: 'rex_films', full_name: 'Rex Williams', avatar_url: null, is_verified: true, rating: 4.8 },
-  },
-]
 
 const categories = [
   'All',
@@ -170,23 +74,43 @@ const typeColors: Record<ListingType, string> = {
 const typeLabels: Record<ListingType, string> = {
   sell: 'For Sale',
   trade: 'Trade',
-  free: 'Free',
+  free: 'Pass It Forward',
 }
 
 export default function MarketplacePage() {
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('All')
   const [typeFilter, setTypeFilter] = useState<'all' | ListingType>('all')
+  const [listings, setListings] = useState<Listing[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const filtered = mockListings.filter((l) => {
+  useEffect(() => {
+    async function loadListings() {
+      setLoading(true)
+      const { data } = await supabase
+        .from('marketplace_listings')
+        .select('id, title, description, price, type, condition, category, location, images, created_at, seller:profiles!seller_id(username, full_name, avatar_url, is_verified, rating)')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(60)
+
+      setListings((data as unknown as Listing[]) ?? [])
+      setLoading(false)
+    }
+    loadListings()
+  }, [])
+
+  const filtered = listings.filter((l) => {
     const matchSearch = !search || l.title.toLowerCase().includes(search.toLowerCase()) || l.category.toLowerCase().includes(search.toLowerCase())
     const matchCat = category === 'All' || l.category === category
     const matchType = typeFilter === 'all' || l.type === typeFilter
     return matchSearch && matchCat && matchType
   })
 
+  const isEmpty = !loading && listings.length === 0
+
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-6xl mx-auto">
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
@@ -204,6 +128,13 @@ export default function MarketplacePage() {
           </Button>
         </Link>
       </div>
+
+      {/* Early access banner */}
+      <EarlyAccessBanner
+        storageKey="marketplace_early_access_v1"
+        headline="The creative gear economy starts here."
+        body="Every camera, light, prop, wardrobe piece, and floral arrangement that served a shoot deserves a second campaign. List what you have. Find what you need. No middleman."
+      />
 
       {/* Community standard banner */}
       <div className="bg-gold/5 border border-gold/20 rounded-xl px-4 py-3 flex items-start gap-3 mb-6">
@@ -274,110 +205,174 @@ export default function MarketplacePage() {
         ))}
       </div>
 
-      {/* Stats */}
-      <div className="flex flex-wrap items-center gap-4 mb-5 text-sm text-text-muted">
-        <span>{filtered.length} listings</span>
-        <span>·</span>
-        <span className="text-green-400">{mockListings.filter(l => l.type === 'free').length} pass it forward</span>
-        <span>·</span>
-        <span className="text-purple-400">{mockListings.filter(l => l.type === 'trade').length} trade offers</span>
-      </div>
-
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filtered.map((listing) => (
-          <article key={listing.id} className="bg-surface border border-border rounded-xl overflow-hidden card-hover flex flex-col">
-
-            {/* Image placeholder */}
-            <div className="aspect-video bg-surface-2 border-b border-border flex items-center justify-center relative">
-              <Camera size={32} className="text-border-light" />
-              <div className="absolute top-2 left-2 flex gap-1.5 flex-wrap">
-                <Badge className={typeColors[listing.type]}>{typeLabels[listing.type]}</Badge>
-              </div>
-              <div className="absolute top-2 right-2">
-                <Badge className={conditionColors[listing.condition]}>{conditionLabels[listing.condition]}</Badge>
+      {/* Loading skeletons */}
+      {loading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="bg-surface border border-border rounded-xl overflow-hidden animate-pulse">
+              <div className="aspect-video bg-border" />
+              <div className="p-4 space-y-3">
+                <div className="h-3 bg-border rounded w-1/4" />
+                <div className="h-4 bg-border rounded w-3/4" />
+                <div className="h-3 bg-border rounded w-full" />
+                <div className="h-3 bg-border rounded w-5/6" />
+                <div className="h-6 bg-border rounded w-1/3 mt-2" />
               </div>
             </div>
-
-            <div className="p-4 flex flex-col flex-1">
-
-              {/* Category tag */}
-              <p className="text-xs text-text-faint mb-1.5">{listing.category}</p>
-
-              <h2 className="font-semibold text-sm mb-2 line-clamp-2 leading-snug">{listing.title}</h2>
-              <p className="text-xs text-text-muted line-clamp-3 mb-3 flex-1 leading-relaxed">{listing.description}</p>
-
-              {/* Price */}
-              <div className="mb-3">
-                {listing.type === 'free' ? (
-                  <div>
-                    <span className="text-lg font-black text-green-400">FREE</span>
-                    <span className="text-xs text-text-faint ml-2">to a good home</span>
-                  </div>
-                ) : listing.type === 'trade' ? (
-                  <span className="text-lg font-black text-purple-400">TRADE OFFER</span>
-                ) : (
-                  <span className="text-xl font-black text-gradient-gold">{formatCurrency(listing.price!)}</span>
-                )}
-              </div>
-
-              {/* Location + time */}
-              <div className="flex items-center justify-between mb-3 text-xs text-text-faint">
-                <span className="flex items-center gap-1">
-                  <MapPin size={10} /> {listing.location}
-                </span>
-                <span>{timeAgo(listing.created_at)}</span>
-              </div>
-
-              {/* Seller + CTA */}
-              <div className="flex items-center justify-between pt-3 border-t border-border">
-                <div className="flex items-center gap-2">
-                  <Avatar name={listing.seller.full_name} size="xs" />
-                  <div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs font-medium">{listing.seller.full_name.split(' ')[0]}</span>
-                      {listing.seller.is_verified && (
-                        <CheckCircle size={11} className="text-gold" fill="currentColor" />
-                      )}
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      <Star size={9} className="text-gold" fill="currentColor" />
-                      <span className="text-xs text-text-faint">{listing.seller.rating}</span>
-                    </div>
-                  </div>
-                </div>
-                <Button size="sm">
-                  {listing.type === 'free' ? 'Claim It' : listing.type === 'trade' ? 'Make Offer' : 'Contact Seller'}
-                </Button>
-              </div>
-
-            </div>
-          </article>
-        ))}
-      </div>
-
-      {filtered.length === 0 && (
-        <div className="text-center py-16 text-text-muted">
-          <ShoppingBag size={36} className="mx-auto mb-3 opacity-30" />
-          <p className="font-medium">No listings found</p>
-          <p className="text-sm">Try a different search or category.</p>
+          ))}
         </div>
       )}
 
-      {/* Bottom CTA */}
-      <div className="mt-10 bg-gold/5 border border-gold/20 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h3 className="font-bold mb-1">Have something with more life in it?</h3>
-          <p className="text-sm text-text-muted max-w-md">
-            Gear, props, wardrobe, florals, décor — if it served your work and can serve someone else&apos;s,
-            list it here. Give it a second campaign.
-          </p>
+      {/* Stats bar — only show when there are real listings */}
+      {!loading && listings.length > 0 && (
+        <div className="flex flex-wrap items-center gap-4 mb-5 text-sm text-text-muted">
+          <span>{filtered.length} listings</span>
+          <span>·</span>
+          <span className="text-green-400">{listings.filter(l => l.type === 'free').length} pass it forward</span>
+          <span>·</span>
+          <span className="text-purple-400">{listings.filter(l => l.type === 'trade').length} trade offers</span>
         </div>
-        <Button className="flex-shrink-0">
-          <Plus size={16} />
-          List Your Item
-        </Button>
-      </div>
+      )}
+
+      {/* True empty state — no listings at all yet */}
+      {isEmpty && (
+        <div className="flex flex-col items-center text-center py-16 px-4">
+          <div className="w-16 h-16 rounded-2xl bg-gold/10 border border-gold/20 flex items-center justify-center mb-5">
+            <Package size={28} className="text-gold" />
+          </div>
+          <h2 className="text-lg font-bold mb-2">List the First Item</h2>
+          <p className="text-text-muted text-sm max-w-sm mb-3 leading-relaxed">
+            Every camera, light, and prop you&apos;ve outgrown has value for the next creative.
+            The marketplace opens the moment the first listing goes up — be that person.
+          </p>
+          <p className="text-xs text-text-faint max-w-xs mb-8 leading-relaxed">
+            Gear, wardrobe, props, florals, lighting — if it served your work and can serve
+            someone else&apos;s, give it a second campaign.
+          </p>
+          <Link href="/marketplace/new">
+            <Button size="lg" className="glow-gold">
+              <Plus size={16} />
+              List Your First Item
+            </Button>
+          </Link>
+        </div>
+      )}
+
+      {/* Search empty — there are listings but search matches nothing */}
+      {!loading && !isEmpty && filtered.length === 0 && (
+        <div className="text-center py-12 text-text-muted">
+          <Search size={32} className="mx-auto mb-3 opacity-30" />
+          <p className="font-medium">No listings match your search</p>
+          <p className="text-sm">Try a different name, category, or listing type.</p>
+        </div>
+      )}
+
+      {/* Real listings grid */}
+      {!loading && filtered.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {filtered.map((listing) => (
+            <article key={listing.id} className="bg-surface border border-border rounded-xl overflow-hidden card-hover flex flex-col">
+
+              {/* Image placeholder / first image */}
+              <div className="aspect-video bg-surface-2 border-b border-border flex items-center justify-center relative overflow-hidden">
+                {listing.images && listing.images.length > 0 ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={listing.images[0]}
+                    alt={listing.title}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <Camera size={32} className="text-border-light" />
+                )}
+                <div className="absolute top-2 left-2 flex gap-1.5 flex-wrap">
+                  <Badge className={typeColors[listing.type]}>{typeLabels[listing.type]}</Badge>
+                </div>
+                <div className="absolute top-2 right-2">
+                  <Badge className={conditionColors[listing.condition]}>{conditionLabels[listing.condition]}</Badge>
+                </div>
+              </div>
+
+              <div className="p-4 flex flex-col flex-1">
+
+                {/* Category tag */}
+                <p className="text-xs text-text-faint mb-1.5">{listing.category}</p>
+
+                <h2 className="font-semibold text-sm mb-2 line-clamp-2 leading-snug">{listing.title}</h2>
+                <p className="text-xs text-text-muted line-clamp-3 mb-3 flex-1 leading-relaxed">{listing.description}</p>
+
+                {/* Price */}
+                <div className="mb-3">
+                  {listing.type === 'free' ? (
+                    <div>
+                      <span className="text-lg font-black text-green-400">FREE</span>
+                      <span className="text-xs text-text-faint ml-2">— pass it forward</span>
+                    </div>
+                  ) : listing.type === 'trade' ? (
+                    <span className="text-lg font-black text-purple-400">TRADE OFFER</span>
+                  ) : (
+                    <span className="text-xl font-black text-gradient-gold">{formatCurrency(listing.price!)}</span>
+                  )}
+                </div>
+
+                {/* Location + time */}
+                <div className="flex items-center justify-between mb-3 text-xs text-text-faint">
+                  {listing.location && (
+                    <span className="flex items-center gap-1">
+                      <MapPin size={10} /> {listing.location}
+                    </span>
+                  )}
+                  <span>{timeAgo(listing.created_at)}</span>
+                </div>
+
+                {/* Seller + CTA */}
+                <div className="flex items-center justify-between pt-3 border-t border-border">
+                  <div className="flex items-center gap-2">
+                    <Avatar name={listing.seller.full_name} src={listing.seller.avatar_url} size="xs" />
+                    <div>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs font-medium">{listing.seller.full_name.split(' ')[0]}</span>
+                        {listing.seller.is_verified && (
+                          <CheckCircle size={11} className="text-gold" fill="currentColor" />
+                        )}
+                      </div>
+                      {listing.seller.rating > 0 && (
+                        <div className="flex items-center gap-0.5">
+                          <Star size={9} className="text-gold" fill="currentColor" />
+                          <span className="text-xs text-text-faint">{listing.seller.rating.toFixed(1)}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <Button size="sm">
+                    {listing.type === 'free' ? 'Claim It' : listing.type === 'trade' ? 'Make Offer' : 'Contact Seller'}
+                  </Button>
+                </div>
+
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+
+      {/* Bottom CTA — always visible */}
+      {!loading && (
+        <div className="mt-10 bg-gold/5 border border-gold/20 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h3 className="font-bold mb-1">Have something with more life in it?</h3>
+            <p className="text-sm text-text-muted max-w-md">
+              Gear, props, wardrobe, florals, décor — if it served your work and can serve someone else&apos;s,
+              list it here. Give it a second campaign.
+            </p>
+          </div>
+          <Link href="/marketplace/new">
+            <Button className="flex-shrink-0">
+              <Plus size={16} />
+              List Your Item
+            </Button>
+          </Link>
+        </div>
+      )}
 
     </div>
   )

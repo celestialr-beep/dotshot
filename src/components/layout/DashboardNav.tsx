@@ -15,6 +15,8 @@ import {
   ShoppingBag,
   Shield,
   FileText,
+  MapPin,
+  CalendarDays,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { DotshotLogo } from '@/components/ui/DotshotLogo'
@@ -26,6 +28,8 @@ const navItems = [
   { href: '/campaigns', icon: Briefcase, label: 'Campaigns' },
   { href: '/forum', icon: MessageSquare, label: 'Forum' },
   { href: '/network', icon: Network, label: 'Network' },
+  { href: '/map', icon: MapPin, label: 'Creative Radar' },
+  { href: '/calendar', icon: CalendarDays, label: 'Calendar' },
   { href: '/marketplace', icon: ShoppingBag, label: 'Marketplace' },
   { href: '/messages', icon: Users, label: 'Messages' },
   { href: '/safety', icon: Shield, label: 'Gig Safety' },

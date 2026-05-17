@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { User, Lock, Bell, Shield, Eye, Save, CheckCircle, AlertTriangle } from 'lucide-react'
+import { User, Lock, Bell, Shield, Eye, Save, CheckCircle, AlertTriangle, MapPin, Ghost } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Avatar } from '@/components/ui/Avatar'
@@ -64,6 +64,9 @@ export default function SettingsPage() {
     allow_messages_from: 'verified', // 'everyone' | 'verified' | 'connections'
   })
 
+  const [mapVisible, setMapVisible] = useState(false)
+  const [mapToggling, setMapToggling] = useState(false)
+
   useEffect(() => {
     async function loadProfile() {
       const { data: { user } } = await supabase.auth.getUser()
@@ -71,10 +74,13 @@ export default function SettingsPage() {
       setUserId(user.id)
       const { data } = await supabase
         .from('profiles')
-        .select('full_name, username, bio, location, website, avatar_url, role')
+        .select('full_name, username, bio, location, website, avatar_url, role, map_visible')
         .eq('id', user.id)
         .single()
-      if (data) setProfile(data as Profile)
+      if (data) {
+        setProfile(data as Profile)
+        setMapVisible((data as Profile & { map_visible: boolean }).map_visible ?? false)
+      }
     }
     loadProfile()
   }, [])
@@ -368,6 +374,60 @@ export default function SettingsPage() {
                 <option value="connections">People I've collaborated with</option>
               </select>
             </div>
+          </div>
+
+          {/* Creative Radar */}
+          <div className="bg-surface border border-border rounded-xl p-5">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="w-9 h-9 rounded-xl bg-gold/10 border border-gold/20 flex items-center justify-center flex-shrink-0">
+                <MapPin size={16} className="text-gold" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-sm">Creative Radar</h2>
+                <p className="text-xs text-text-muted mt-0.5">
+                  Control whether you appear on the Creative Radar map for nearby collaborators to find.
+                </p>
+              </div>
+            </div>
+
+            <label className="flex items-start gap-4 cursor-pointer">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  {mapVisible ? (
+                    <Eye size={14} className="text-gold" />
+                  ) : (
+                    <Ghost size={14} className="text-text-faint" />
+                  )}
+                  <p className="text-sm font-medium text-text">
+                    {mapVisible ? 'On the Map' : 'Ghost Mode'}
+                  </p>
+                </div>
+                <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                  {mapVisible
+                    ? 'You\'re visible to nearby creatives. We only share your approximate area — never your exact address.'
+                    : 'You\'re hidden from the map. Toggle on to let nearby creatives discover you.'}
+                </p>
+              </div>
+              <div className="relative flex-shrink-0 mt-0.5">
+                <div
+                  onClick={async () => {
+                    if (!userId || mapToggling) return
+                    setMapToggling(true)
+                    const next = !mapVisible
+                    await supabase.from('profiles').update({ map_visible: next }).eq('id', userId)
+                    setMapVisible(next)
+                    setMapToggling(false)
+                  }}
+                  className={`w-10 h-6 rounded-full transition-colors cursor-pointer ${mapVisible ? 'bg-gold' : 'bg-border'}`}
+                >
+                  <div className={`w-4 h-4 bg-white rounded-full absolute top-1 transition-all ${mapVisible ? 'left-5' : 'left-1'}`} />
+                </div>
+              </div>
+            </label>
+
+            <p className="text-xs text-text-faint mt-3 leading-relaxed border-t border-border pt-3">
+              Location precision is reduced to approximately 1 km. Your coordinates are updated only when you enable the Radar or visit the map page. You can go Ghost Mode at any time.
+            </p>
           </div>
 
           {/* Safety notice */}

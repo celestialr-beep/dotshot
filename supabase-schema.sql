@@ -256,3 +256,68 @@ $$ language plpgsql security definer;
 create trigger on_review_added
   after insert on reviews
   for each row execute procedure update_profile_rating();
+
+-- ─── Bookings / Calendar ─────────────────────────────────────────────────────
+create table bookings (
+  id uuid default uuid_generate_v4() primary key,
+  requester_id uuid references profiles(id) on delete cascade not null,
+  host_id uuid references profiles(id) on delete cascade not null,
+  campaign_id uuid references campaigns(id) on delete set null,
+  -- virtual = Jitsi video call · scout = public location preview · collab = the actual shoot
+  type text not null default 'virtual' check (type in ('virtual', 'scout', 'collab')),
+  status text not null default 'pending' check (status in ('pending', 'confirmed', 'cancelled', 'completed')),
+  title text not null,
+  notes text,
+  scheduled_at timestamptz not null,
+  duration_minutes int default 30,
+  meeting_link text,        -- auto-generated Jitsi URL for virtual, or address for in-person
+  location_notes text,      -- for scouts: describe the spot, share public landmark
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+alter table bookings enable row level security;
+create policy "Participants can view their bookings." on bookings for select
+  using (auth.uid() = requester_id or auth.uid() = host_id);
+create policy "Authenticated users can create bookings." on bookings for insert
+  with check (auth.uid() = requester_id);
+create policy "Participants can update bookings." on bookings for update
+  using (auth.uid() = requester_id or auth.uid() = host_id);
+create policy "Participants can cancel bookings." on bookings for delete
+  using (auth.uid() = requester_id or auth.uid() = host_id);
+
+-- ─── Creative Radar: map visibility columns ──────────────────────────────────
+-- Run this ALTER in Supabase SQL Editor if profiles table already exists
+alter table profiles
+  add column if not exists map_visible boolean default false,
+  add column if not exists lat numeric(9, 6),
+  add column if not exists lng numeric(9, 6),
+  add column if not exists map_updated_at timestamptz;
+
+-- Index for fast map queries (only visible profiles with coords)
+create index if not exists profiles_map_visible_idx
+  on profiles (map_visible, lat, lng)
+  where map_visible = true and lat is not null and lng is not null;
+
+-- ─── Marketplace Listings ────────────────────────────────────────────────────
+create table marketplace_listings (
+  id uuid default uuid_generate_v4() primary key,
+  seller_id uuid references profiles(id) on delete cascade not null,
+  title text not null,
+  description text not null,
+  price numeric(10,2),
+  type text not null default 'sell' check (type in ('sell', 'trade', 'free')),
+  condition text not null default 'good' check (condition in ('new', 'like_new', 'good', 'fair')),
+  category text not null,
+  location text,
+  images text[] default '{}',
+  is_active boolean default true,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+alter table marketplace_listings enable row level security;
+create policy "Active listings viewable by everyone." on marketplace_listings for select using (is_active = true);
+create policy "Sellers can create listings." on marketplace_listings for insert with check (auth.uid() = seller_id);
+create policy "Sellers can update their listings." on marketplace_listings for update using (auth.uid() = seller_id);
+create policy "Sellers can delete their listings." on marketplace_listings for delete using (auth.uid() = seller_id);
