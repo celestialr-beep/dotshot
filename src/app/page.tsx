@@ -140,7 +140,7 @@ const foundingPillars = [
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen pb-20 lg:pb-0">
       <Navbar />
 
       {/* ─── Hero ─────────────────────────────── */}
@@ -225,12 +225,13 @@ export default function HomePage() {
           {/* Editorial photo grid — 3 col, 2 rows, left card is tall */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3" style={{ height: 'clamp(360px, 55vw, 560px)' }}>
 
-            {/* Tall left card — Photographers */}
+            {/* Tall left — Camera / studio equipment (the tool of the craft) */}
+            {/* Swap photo ID at unsplash.com to change this image */}
             <div className="relative overflow-hidden rounded-2xl row-span-2 group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=700&q=85&bri=12&sat=15"
-                alt="Photographer at work"
+                src="https://images.unsplash.com/photo-1516035642244-8b8b3ccffb06?auto=format&fit=crop&w=700&q=90&bri=10&sat=12"
+                alt="Professional camera — the tool of the craft"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent" />
@@ -244,7 +245,26 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Top-middle — Makeup Artists */}
+            {/* Top-middle — Director / creative professional (Black man) */}
+            <div className="relative overflow-hidden rounded-2xl group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://images.unsplash.com/photo-1504257432389-52343af06ae3?auto=format&fit=crop&w=600&q=90&bri=12&sat=15"
+                alt="Creative director on set"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-md bg-gold/20 backdrop-blur-sm border border-gold/30 flex items-center justify-center">
+                    <Globe size={11} className="text-gold" />
+                  </div>
+                  <span className="text-xs font-semibold text-white drop-shadow">Directors</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Top-right — Makeup Artists */}
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -263,7 +283,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Top-right — Musicians */}
+            {/* Bottom-middle — Musicians & DJs */}
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -278,25 +298,6 @@ export default function HomePage() {
                     <Star size={11} className="text-gold" />
                   </div>
                   <span className="text-xs font-semibold text-white drop-shadow">Musicians & DJs</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom-middle — Models & Talent */}
-            <div className="relative overflow-hidden rounded-2xl group">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=85&bri=12&sat=15"
-                alt="Fashion model on set"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />
-              <div className="absolute bottom-3 left-3 right-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-md bg-gold/20 backdrop-blur-sm border border-gold/30 flex items-center justify-center">
-                    <Users size={11} className="text-gold" />
-                  </div>
-                  <span className="text-xs font-semibold text-white drop-shadow">Models & Talent</span>
                 </div>
               </div>
             </div>
@@ -483,6 +484,17 @@ export default function HomePage() {
       </section>
 
       <Footer />
+
+      {/* ── Mobile sticky sign-up CTA ── visible on mobile only, always in reach */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 px-4 py-3 bg-dark/95 backdrop-blur-md border-t border-border safe-area-bottom">
+        <Link href="/signup">
+          <Button size="lg" className="w-full glow-gold font-semibold tracking-wide">
+            Join Free — Be a Founding Member
+            <ArrowRight size={18} />
+          </Button>
+        </Link>
+      </div>
+
     </div>
   )
 }

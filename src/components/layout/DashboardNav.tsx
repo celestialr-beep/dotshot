@@ -61,7 +61,7 @@ export function DashboardNav() {
   }
 
   return (
-    <aside className="hidden lg:flex flex-col w-60 min-h-screen bg-surface border-r border-border fixed left-0 top-0 z-40">
+    <aside className="hidden lg:flex flex-col w-60 h-screen bg-surface border-r border-border fixed left-0 top-0 z-40">
       {/* Logo */}
       <div className="p-5 border-b border-border">
         <DotshotLogo size="sm" href="/" />

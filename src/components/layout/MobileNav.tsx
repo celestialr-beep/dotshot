@@ -134,7 +134,7 @@ export function MobileNav() {
           />
 
           {/* Sheet */}
-          <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface rounded-t-3xl border-t border-border shadow-2xl">
+          <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface rounded-t-3xl border-t border-border shadow-2xl max-h-[85vh] overflow-y-auto">
             {/* Drag handle */}
             <div className="flex justify-center pt-3 pb-1">
               <div className="w-10 h-1 rounded-full bg-border-light" />
