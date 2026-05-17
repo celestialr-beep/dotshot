@@ -35,6 +35,7 @@ export default function SettingsPage() {
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
   const [userId, setUserId] = useState<string | null>(null)
+  const [profileLoading, setProfileLoading] = useState(true)
 
   const [profile, setProfile] = useState<Profile>({
     full_name: '',
@@ -83,8 +84,11 @@ export default function SettingsPage() {
 
   useEffect(() => {
     async function loadProfile() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+      // getSession() reads from localStorage — no network round-trip,
+      // so userId is set before the user can interact with any form field
+      const { data: { session } } = await supabase.auth.getSession()
+      const user = session?.user
+      if (!user) { setProfileLoading(false); return }
       setUserId(user.id)
       const { data } = await supabase
         .from('profiles')
@@ -96,6 +100,7 @@ export default function SettingsPage() {
         setMapVisible((data as Profile & { map_visible: boolean }).map_visible ?? false)
         setUsernameChanges((data as Profile & { username_changes: number }).username_changes ?? 0)
       }
+      setProfileLoading(false)
     }
     loadProfile()
   }, [])
@@ -106,7 +111,11 @@ export default function SettingsPage() {
 
   async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
-    if (!file || !userId) return
+    if (!file) return
+    if (!userId) {
+      setError('Still loading your session — please wait a second and try again.')
+      return
+    }
     const allowed = ['image/jpeg', 'image/png', 'image/webp']
     if (!allowed.includes(file.type)) {
       setError('Only JPG, PNG, or WebP images are supported.')
@@ -124,8 +133,16 @@ export default function SettingsPage() {
       .from('avatars')
       .upload(path, file, { upsert: true, contentType: file.type })
     if (uploadErr) {
-      setError(uploadErr.message)
       setAvatarUploading(false)
+      // Catch the common "bucket not found" case and give a clear fix
+      if (uploadErr.message.toLowerCase().includes('bucket') || uploadErr.message.includes('not found') || uploadErr.message.includes('404')) {
+        setError('Storage bucket not set up yet. Go to Supabase Dashboard → Storage → New bucket → name it "avatars" → enable Public → Create. Then try again.')
+      } else if (uploadErr.message.includes('policy') || uploadErr.message.includes('permission') || uploadErr.message.includes('403')) {
+        setError('Upload blocked by storage policy. In Supabase Dashboard → Storage → avatars bucket → Policies, make sure authenticated users can INSERT.')
+      } else {
+        setError(`Upload failed: ${uploadErr.message}`)
+      }
+      if (fileInputRef.current) fileInputRef.current.value = ''
       return
     }
     const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
@@ -141,7 +158,6 @@ export default function SettingsPage() {
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     }
-    // Reset file input so the same file can be re-selected
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
@@ -334,10 +350,11 @@ export default function SettingsPage() {
                 {!editingUsername && usernameChanges < MAX_USERNAME_CHANGES && (
                   <button
                     type="button"
+                    disabled={profileLoading}
                     onClick={() => { setUsernameInput(profile.username); setUsernameError(''); setEditingUsername(true) }}
-                    className="flex items-center gap-1.5 text-xs text-gold hover:text-gold-light font-medium transition-colors"
+                    className="flex items-center gap-1.5 text-xs text-gold hover:text-gold-light font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    <Pencil size={12} /> Edit
+                    <Pencil size={12} /> {profileLoading ? 'Loading…' : 'Edit'}
                   </button>
                 )}
               </div>

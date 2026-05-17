@@ -244,12 +244,12 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Top-middle — videographer / director behind camera */}
+            {/* Top-middle — film director on set, crew, clapboard */}
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=600&q=80"
-                alt="Videographer behind camera"
+                src="https://images.unsplash.com/photo-1440404653325-ab127d49abc1?auto=format&fit=crop&w=600&q=80"
+                alt="Film director on set"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />
@@ -263,12 +263,12 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Top-right — Makeup / beauty editorial */}
+            {/* Top-right — vibrant editorial makeup close-up */}
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=600&q=80"
-                alt="Makeup artist at work"
+                src="https://images.unsplash.com/photo-1512361436605-a484bdb34b5f?auto=format&fit=crop&w=600&q=80"
+                alt="Vibrant editorial makeup look"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />
@@ -301,12 +301,12 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Bottom-right — Photographer with DSLR camera */}
+            {/* Bottom-right — behind the scenes, studio lighting rig */}
             <div className="relative overflow-hidden rounded-2xl group">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="https://images.unsplash.com/photo-1554048612-b6a482bc67e5?auto=format&fit=crop&w=600&q=80"
-                alt="Photographer with DSLR camera"
+                src="https://images.unsplash.com/photo-1524169113253-c6ba17398f39?auto=format&fit=crop&w=600&q=80"
+                alt="Behind the scenes studio production"
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/10 to-transparent" />
