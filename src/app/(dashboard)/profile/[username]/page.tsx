@@ -79,14 +79,23 @@ export default function ProfilePage() {
         // No profile row yet — create one from auth metadata so the page works immediately
         if (!data) {
           const meta = currentUser.user_metadata ?? {}
+          // Generate a safe username — prefer what they typed at signup,
+          // fall back to a unique temp handle from their user ID
+          const rawUsername = (meta.username ?? meta.name ?? '')
+            .toLowerCase()
+            .replace(/[^a-z0-9_]/g, '')
+            .slice(0, 20)
+          const safeUsername =
+            rawUsername || `creator_${currentUser.id.replace(/-/g, '').slice(0, 10)}`
+
           const { data: created } = await supabase
             .from('profiles')
             .upsert({
-              id: currentUser.id,
+              id:        currentUser.id,
               full_name: meta.full_name ?? meta.name ?? 'New Creator',
-              username:  (meta.username ?? '').toLowerCase().replace(/[^a-z0-9_]/g, '') || null,
-              role:      meta.role      ?? 'photographer',
-              location:  meta.location  ?? null,
+              username:  safeUsername,
+              role:      meta.role     ?? 'photographer',
+              location:  meta.location ?? null,
             })
             .select()
             .single()

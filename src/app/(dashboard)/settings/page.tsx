@@ -185,11 +185,17 @@ export default function SettingsPage() {
     if (!userId) return
     setLoading(true)
     setError('')
+    // Ensure username is never null — fall back to a temp handle from userId
+    const safeUsername =
+      profile.username?.trim() ||
+      `creator_${userId!.replace(/-/g, '').slice(0, 10)}`
+
     const { error: err } = await supabase
       .from('profiles')
       .upsert({
         id: userId,
         full_name: profile.full_name,
+        username: safeUsername,
         bio: profile.bio,
         location: profile.location,
         website: profile.website,

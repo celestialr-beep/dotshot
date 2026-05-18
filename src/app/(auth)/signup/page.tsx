@@ -70,10 +70,13 @@ export default function SignupPage() {
 
     // Create the profile row immediately so /profile/me works on first login
     if (authData?.user) {
+      const cleanUsername =
+        username.replace('@', '').toLowerCase().replace(/[^a-z0-9_]/g, '') ||
+        `creator_${authData.user.id.replace(/-/g, '').slice(0, 10)}`
       await supabase.from('profiles').upsert({
         id: authData.user.id,
         full_name: fullName,
-        username: username.replace('@', '').toLowerCase(),
+        username: cleanUsername,
         role,
         location,
       })
