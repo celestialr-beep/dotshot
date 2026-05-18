@@ -74,11 +74,19 @@ export default function SignupPage() {
         username.replace('@', '').toLowerCase().replace(/[^a-z0-9_]/g, '') ||
         `creator_${authData.user.id.replace(/-/g, '').slice(0, 10)}`
       await supabase.from('profiles').upsert({
-        id: authData.user.id,
-        full_name: fullName,
-        username: cleanUsername,
+        id:                 authData.user.id,
+        full_name:          fullName,
+        username:           cleanUsername,
         role,
         location,
+        country:            '',
+        subscription_tier:  'free',
+        is_verified:        false,
+        rating:             0,
+        review_count:       0,
+        completed_projects: 0,
+        top_collaborators:  [],
+        portfolio_images:   [],
       })
     }
 

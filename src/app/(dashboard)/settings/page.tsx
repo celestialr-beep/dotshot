@@ -193,12 +193,21 @@ export default function SettingsPage() {
     const { error: err } = await supabase
       .from('profiles')
       .upsert({
-        id: userId,
-        full_name: profile.full_name,
-        username: safeUsername,
-        bio: profile.bio,
-        location: profile.location,
-        website: profile.website,
+        id:                 userId,
+        full_name:          profile.full_name,
+        username:           safeUsername,
+        bio:                profile.bio,
+        location:           profile.location,
+        website:            profile.website,
+        role:               profile.role || 'photographer',
+        country:            '',
+        subscription_tier:  'free',
+        is_verified:        false,
+        rating:             0,
+        review_count:       0,
+        completed_projects: 0,
+        top_collaborators:  [],
+        portfolio_images:   [],
       })
     setLoading(false)
     if (err) {

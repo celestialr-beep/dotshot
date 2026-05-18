@@ -91,11 +91,19 @@ export default function ProfilePage() {
           const { data: created } = await supabase
             .from('profiles')
             .upsert({
-              id:        currentUser.id,
-              full_name: meta.full_name ?? meta.name ?? 'New Creator',
-              username:  safeUsername,
-              role:      meta.role     ?? 'photographer',
-              location:  meta.location ?? null,
+              id:                  currentUser.id,
+              full_name:           meta.full_name ?? meta.name ?? 'New Creator',
+              username:            safeUsername,
+              role:                meta.role     ?? 'photographer',
+              location:            meta.location ?? null,
+              country:             '',
+              subscription_tier:   'free',
+              is_verified:         false,
+              rating:              0,
+              review_count:        0,
+              completed_projects:  0,
+              top_collaborators:   [],
+              portfolio_images:    [],
             })
             .select()
             .single()
