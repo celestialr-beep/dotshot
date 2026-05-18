@@ -6,6 +6,7 @@ interface AvatarProps {
   name: string
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   className?: string
+  objectPosition?: 'top' | 'center' | 'bottom'
 }
 
 const sizes = {
@@ -14,6 +15,12 @@ const sizes = {
   md: 'w-10 h-10 text-base',
   lg: 'w-14 h-14 text-lg',
   xl: 'w-20 h-20 text-2xl',
+}
+
+const positions = {
+  top:    'object-top',
+  center: 'object-center',
+  bottom: 'object-bottom',
 }
 
 function getInitials(name: string) {
@@ -25,13 +32,18 @@ function getInitials(name: string) {
     .toUpperCase()
 }
 
-export function Avatar({ src, name, size = 'md', className }: AvatarProps) {
+export function Avatar({ src, name, size = 'md', className, objectPosition = 'top' }: AvatarProps) {
   const sizeClass = sizes[size]
 
   if (src) {
     return (
       <div className={cn('relative rounded-full overflow-hidden flex-shrink-0', sizeClass, className)}>
-        <Image src={src} alt={name} fill className="object-cover" />
+        <Image
+          src={src}
+          alt={name}
+          fill
+          className={cn('object-cover', positions[objectPosition])}
+        />
       </div>
     )
   }

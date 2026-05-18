@@ -74,6 +74,7 @@ export default function SettingsPage() {
   // Avatar upload
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [avatarUploading, setAvatarUploading] = useState(false)
+  const [avatarPosition, setAvatarPosition] = useState<'top' | 'center' | 'bottom'>('top')
   // Prevent onAuthStateChange re-fires (token refresh) from wiping form state
   const profileFetchedRef = useRef(false)
 
@@ -90,14 +91,15 @@ export default function SettingsPage() {
     async function fetchProfile(uid: string) {
       const { data } = await supabase
         .from('profiles')
-        .select('full_name, username, bio, location, website, avatar_url, role, map_visible, username_changes')
+        .select('full_name, username, bio, location, website, avatar_url, role, map_visible, username_changes, avatar_position')
         .eq('id', uid)
         .single()
       if (!mounted) return
       if (data) {
         setProfile(data as Profile)
-        setMapVisible((data as Profile & { map_visible: boolean }).map_visible ?? false)
-        setUsernameChanges((data as Profile & { username_changes: number }).username_changes ?? 0)
+        setMapVisible((data as any).map_visible ?? false)
+        setUsernameChanges((data as any).username_changes ?? 0)
+        setAvatarPosition((data as any).avatar_position ?? 'top')
       }
       setProfileLoading(false)
     }
@@ -168,7 +170,7 @@ export default function SettingsPage() {
     const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
     const { error: updateErr } = await supabase
       .from('profiles')
-      .update({ avatar_url: publicUrl })
+      .update({ avatar_url: publicUrl, avatar_position: avatarPosition })
       .eq('id', userId)
     setAvatarUploading(false)
     if (updateErr) {
@@ -329,7 +331,7 @@ export default function SettingsPage() {
             <h2 className="font-semibold text-sm mb-4">Profile Photo</h2>
             <div className="flex items-center gap-4">
               <div className="relative flex-shrink-0">
-                <Avatar name={profile.full_name || 'You'} src={profile.avatar_url} size="lg" />
+                <Avatar name={profile.full_name || 'You'} src={profile.avatar_url} size="lg" objectPosition={avatarPosition} />
                 {avatarUploading && (
                   <div className="absolute inset-0 rounded-full bg-dark/60 flex items-center justify-center">
                     <div className="w-4 h-4 border-2 border-gold border-t-transparent rounded-full animate-spin" />
@@ -348,7 +350,33 @@ export default function SettingsPage() {
                 >
                   {profileLoading ? 'Loading…' : avatarUploading ? 'Uploading…' : 'Upload new photo'}
                 </button>
-                <p className="text-xs text-text-faint mt-1">JPG, PNG, or WebP · Max 5 MB · Square crop looks best</p>
+                <p className="text-xs text-text-faint mt-1">JPG, PNG, or WebP · Max 5 MB</p>
+                {profile.avatar_url && (
+                  <div className="mt-3">
+                    <p className="text-xs text-text-faint mb-1.5">Photo position</p>
+                    <div className="flex gap-1.5">
+                      {(['top', 'center', 'bottom'] as const).map((pos) => (
+                        <button
+                          key={pos}
+                          type="button"
+                          onClick={async () => {
+                            setAvatarPosition(pos)
+                            if (userId) {
+                              await supabase.from('profiles').update({ avatar_position: pos }).eq('id', userId)
+                            }
+                          }}
+                          className={`px-3 py-1 rounded-lg text-xs font-medium border transition-all capitalize ${
+                            avatarPosition === pos
+                              ? 'bg-gold/15 border-gold/40 text-gold'
+                              : 'bg-surface-2 border-border text-text-muted hover:text-text'
+                          }`}
+                        >
+                          {pos}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <input
                   ref={fileInputRef}
                   type="file"

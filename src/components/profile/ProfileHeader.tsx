@@ -117,6 +117,7 @@ export function ProfileHeader({
                   src={profile.avatar_url ?? null}
                   size="xl"
                   className="w-full h-full rounded-none"
+                  objectPosition={(profile as any).avatar_position ?? 'top'}
                 />
               </div>
               {/* Status dot */}
