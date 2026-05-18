@@ -168,8 +168,7 @@ export default function SettingsPage() {
     const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
     const { error: updateErr } = await supabase
       .from('profiles')
-      .update({ avatar_url: publicUrl })
-      .eq('id', userId)
+      .upsert({ id: userId, avatar_url: publicUrl })
     setAvatarUploading(false)
     if (updateErr) {
       setError(updateErr.message)
@@ -188,13 +187,13 @@ export default function SettingsPage() {
     setError('')
     const { error: err } = await supabase
       .from('profiles')
-      .update({
+      .upsert({
+        id: userId,
         full_name: profile.full_name,
         bio: profile.bio,
         location: profile.location,
         website: profile.website,
       })
-      .eq('id', userId)
     setLoading(false)
     if (err) {
       setError(err.message)

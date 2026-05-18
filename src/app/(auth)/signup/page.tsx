@@ -49,7 +49,7 @@ export default function SignupPage() {
     setLoading(true)
     setError('')
 
-    const { error: authError } = await supabase.auth.signUp({
+    const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -66,6 +66,17 @@ export default function SignupPage() {
       setError(authError.message)
       setLoading(false)
       return
+    }
+
+    // Create the profile row immediately so /profile/me works on first login
+    if (authData?.user) {
+      await supabase.from('profiles').upsert({
+        id: authData.user.id,
+        full_name: fullName,
+        username: username.replace('@', '').toLowerCase(),
+        role,
+        location,
+      })
     }
 
     router.push('/dashboard')
