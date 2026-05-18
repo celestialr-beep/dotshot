@@ -168,7 +168,8 @@ export default function SettingsPage() {
     const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path)
     const { error: updateErr } = await supabase
       .from('profiles')
-      .upsert({ id: userId, avatar_url: publicUrl })
+      .update({ avatar_url: publicUrl })
+      .eq('id', userId)
     setAvatarUploading(false)
     if (updateErr) {
       setError(updateErr.message)
@@ -185,30 +186,18 @@ export default function SettingsPage() {
     if (!userId) return
     setLoading(true)
     setError('')
-    // Ensure username is never null — fall back to a temp handle from userId
-    const safeUsername =
-      profile.username?.trim() ||
-      `creator_${userId!.replace(/-/g, '').slice(0, 10)}`
 
+    // Plain update — never touches NOT NULL columns we don't own (username, country, etc.)
     const { error: err } = await supabase
       .from('profiles')
-      .upsert({
-        id:                 userId,
-        full_name:          profile.full_name,
-        username:           safeUsername,
-        bio:                profile.bio,
-        location:           profile.location,
-        website:            profile.website,
-        role:               profile.role || 'photographer',
-        country:            '',
-        subscription_tier:  'free',
-        is_verified:        false,
-        rating:             0,
-        review_count:       0,
-        completed_projects: 0,
-        top_collaborators:  [],
-        portfolio_images:   [],
+      .update({
+        full_name: profile.full_name,
+        bio:       profile.bio,
+        location:  profile.location,
+        website:   profile.website,
+        role:      profile.role || 'photographer',
       })
+      .eq('id', userId)
     setLoading(false)
     if (err) {
       setError(err.message)
