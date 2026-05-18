@@ -69,11 +69,30 @@ export default function ProfilePage() {
 
       if (username === 'me') {
         if (!currentUser) { setLoading(false); return }
-        const { data } = await supabase
+
+        let { data } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', currentUser.id)
           .single()
+
+        // No profile row yet — create one from auth metadata so the page works immediately
+        if (!data) {
+          const meta = currentUser.user_metadata ?? {}
+          const { data: created } = await supabase
+            .from('profiles')
+            .upsert({
+              id: currentUser.id,
+              full_name: meta.full_name ?? meta.name ?? 'New Creator',
+              username:  (meta.username ?? '').toLowerCase().replace(/[^a-z0-9_]/g, '') || null,
+              role:      meta.role      ?? 'photographer',
+              location:  meta.location  ?? null,
+            })
+            .select()
+            .single()
+          data = created
+        }
+
         if (data) {
           setProfile(data)
           setIsOwner(true)
@@ -127,11 +146,24 @@ export default function ProfilePage() {
   if (!profile) {
     return (
       <div className="p-6 max-w-5xl mx-auto text-center py-20">
-        <h2 className="text-xl font-bold mb-2">Profile not found</h2>
-        <p className="text-text-muted mb-6">@{username} doesn&apos;t exist yet.</p>
-        <Link href="/dashboard">
-          <Button variant="outline">Go to Dashboard</Button>
-        </Link>
+        <h2 className="text-xl font-bold mb-2">
+          {username === 'me' ? 'Finish setting up your profile' : 'Profile not found'}
+        </h2>
+        <p className="text-text-muted mb-6">
+          {username === 'me'
+            ? 'Go to Settings to add your name, bio, and a profile photo.'
+            : `@${username} doesn't exist yet.`}
+        </p>
+        <div className="flex gap-3 justify-center">
+          {username === 'me' && (
+            <Link href="/settings">
+              <Button>Go to Settings</Button>
+            </Link>
+          )}
+          <Link href="/dashboard">
+            <Button variant="outline">Go to Dashboard</Button>
+          </Link>
+        </div>
       </div>
     )
   }
